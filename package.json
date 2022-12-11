@@ -1,0 +1,30 @@
+{
+	"name": "@v8tenko/phtml",
+	"version": "1.0.0",
+	"description": "Simple JSX implementation",
+	"main": "dist/index.js",
+	"scripts": {
+		"start": "ts-node index.ts"
+	},
+	"author": "v8tenko",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "^18.11.9",
+		"@typescript-eslint/eslint-plugin": "^5.46.0",
+		"@typescript-eslint/parser": "^5.46.0",
+		"eslint": "^8.29.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-import-resolver-jest": "^3.0.2",
+		"eslint-import-resolver-node": "^0.3.6",
+		"eslint-import-resolver-typescript": "^3.5.2",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"prettier": "^2.8.1",
+		"typescript": "^4.9.3"
+	},
+	"dependencies": {
+		"@v8tenko/utils": "workspace:^1.0.0",
+		"@v8tenko/vdom": "workspace:^1.0.0",
+		"ts-node": "^10.9.1"
+	}
+}

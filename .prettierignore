@@ -1,0 +1,10 @@
+**/*.less
+**/*.css
+**/build/**
+**/.th-config.json
+packages/workspace-sdk/**
+packages/handlebars-template/**
+packages/image-annotation/**
+projects/toloka/packages/screenshot-testing/**
+.pnpm-store
+**/tolocli/**/*.md

@@ -1,0 +1,13 @@
+{
+	"name": "@v8tenko/vdom",
+	"version": "1.0.0",
+	"description": "Virtual DOM implementation for phtml",
+	"main": "index.js",
+	"private": true,
+	"scripts": {},
+	"author": "v8tenko",
+	"license": "ISC",
+	"dependencies": {
+		"@v8tenko/utils": "workspace:^1.0.0"
+	}
+}
