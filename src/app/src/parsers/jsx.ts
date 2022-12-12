@@ -5,5 +5,5 @@ export const html = (template: TemplateStringsArray, ...args: any[]) => {
 		return null;
 	}
 
-	assert(args.length);
+	assert(args.length !== 0);
 };

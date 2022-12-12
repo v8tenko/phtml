@@ -59,7 +59,6 @@ module.exports = {
 		'no-with': 'error',
 		radix: 'error',
 		'vars-on-top': 'off',
-		'no-console': 'error',
 		yoda: 'warn',
 		strict: ['error', 'safe'],
 		'no-shadow-restricted-names': 'error',

@@ -1,8 +1,0 @@
-{
-	"name": "@v8tenko/utils",
-	"version": "1.0.0",
-	"main": "index.ts",
-	"author": "v8tenko",
-	"private": true,
-	"license": "ISC"
-}
