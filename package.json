@@ -1,6 +1,8 @@
 {
+    "private": true,
     "scripts": {
-        "dev": "pnpm -F '@v8tenko/*' dev"
+        "dev": "pnpm -F @v8tenko/dev-server start @v8tenko/phtml",
+        "prepare": "husky install"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.46.0",

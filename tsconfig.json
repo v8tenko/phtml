@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"lib": ["ES6"],
+		"module": "commonjs",
+		"noEmit": false,
+		"composite": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"allowUnreachableCode": false,
+		"skipLibCheck": true
+	},
+	"exclude": ["**/node_modules/**"]
+}
