@@ -21,6 +21,10 @@ export const startModule = async (module: string | Module) => {
 		);
 	}
 
+	if (name.endsWith('app')) {
+		return;
+	}
+
 	exec(`cd ${path}`, (err) => {
 		if (err) {
 			console.log(colors.red(`Error: unable to locate to: ${path}`));
