@@ -6,6 +6,6 @@ const test = {
 	check: 1
 };
 
-const name = pick(test, ['name', 'lastname', 'check']);
+const name = pick(test, ['name', 'lastname']);
 
 console.log(name);
