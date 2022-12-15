@@ -1,7 +1,7 @@
-import { runCommandAsPromise } from './runCommandAsPromise';
+import { execSync } from 'child_process';
 
 export const findALlModules = async (): Promise<Module[]> => {
-	const allDeps = JSON.parse(await runCommandAsPromise('pnpm', ['list', '-r', '--json'])) as Module[];
+	const allDeps = JSON.parse(execSync('pnpm list -r -json').toString()) as Module[];
 
 	return allDeps;
 };
