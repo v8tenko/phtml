@@ -3,7 +3,7 @@
     "name": "@v8tenko/root",
     "scripts": {
         "build": "pnpm -F @v8tenko/app build",
-        "deploy": "pnpm -F @v8tenko/deploy",
+        "deploy": "pnpm -F @v8tenko/deploy start",
         "dev": "pnpm -F @v8tenko/monorepo start",
         "prepare": "husky install"
     },
