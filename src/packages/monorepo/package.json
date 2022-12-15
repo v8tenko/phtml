@@ -1,11 +1,12 @@
 {
     "private": true,
-    "name": "@v8tenko/dev-server",
+    "name": "@v8tenko/monorepo",
     "version": "1.0.0",
     "license": "ISC",
-    "author": "",
+    "author": "v8tenko",
+    "main": "dist/index.js",
     "scripts": {
-        "start": "tsc && node dist/index.js"
+        "start": "tsc && node dist/start.js"
     },
     "devDependencies": {
         "@types/node": "^18.11.13",

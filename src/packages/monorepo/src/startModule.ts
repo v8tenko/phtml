@@ -16,9 +16,7 @@ export const startModule = async (module: string | Module) => {
 	const { path, name } = typeof module === 'string' ? notEmptyModules.find(({ name }) => name === module)! : module;
 
 	if (!path) {
-		throw new Error(
-			`Unable to find ${module} module. Found modules: ${notEmptyModules.map((module) => module.name)}`
-		);
+		return;
 	}
 
 	if (name.endsWith('app')) {
