@@ -4,7 +4,7 @@
 	"description": "Simple JSX implementation",
 	"license": "ISC",
 	"author": "v8tenko",
-	"main": "dist/index.js",
+	"main": "index.ts",
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc -w"
