@@ -1,30 +1,30 @@
 {
-    "private": true,
-    "name": "@v8tenko/root",
-    "scripts": {
-        "build": "pnpm -F @v8tenko/app build",
-        "deploy": "pnpm -F @v8tenko/deploy start",
-        "dev": "pnpm -F @v8tenko/monorepo start",
-        "prepare": "husky install"
-    },
-    "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.46.0",
-        "@typescript-eslint/parser": "^5.46.0",
-        "dotenv": "^16.0.3",
-        "eslint": "^8.29.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-import-resolver-jest": "^3.0.2",
-        "eslint-import-resolver-node": "^0.3.6",
-        "eslint-import-resolver-typescript": "^3.5.2",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "husky": "^8.0.2",
-        "lint-staged": "^13.1.0",
-        "prettier": "^2.8.1",
-        "prettier-package-json": "^2.7.0",
-        "typescript": "^4.9.4"
-    },
-    "prettier-package-json": {
-        "tabWidth": 4
-    }
+	"private": true,
+	"name": "@v8tenko/root",
+	"type": "module",
+	"scripts": {
+		"build": "pnpm -F @v8tenko/app build",
+		"dev": "pnpm run --parallel --stream dev",
+		"prepare": "husky install"
+	},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.46.0",
+		"@typescript-eslint/parser": "^5.46.0",
+		"dotenv": "^16.0.3",
+		"eslint": "^8.29.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-import-resolver-jest": "^3.0.2",
+		"eslint-import-resolver-node": "^0.3.6",
+		"eslint-import-resolver-typescript": "^3.5.2",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"husky": "^8.0.2",
+		"lint-staged": "^13.1.0",
+		"prettier": "^2.8.1",
+		"prettier-package-json": "^2.7.0",
+		"typescript": "^4.9.4"
+	},
+	"prettier-package-json": {
+		"tabWidth": 4
+	}
 }

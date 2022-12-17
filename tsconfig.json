@@ -1,12 +1,14 @@
 {
 	"compilerOptions": {
-		"target": "es6",
-		"lib": ["ES6"],
-		"module": "commonjs",
+		"target": "ESNext",
+		"lib": ["ESNext"],
+		"module": "ESNext",
 		"noEmit": false,
 		"composite": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"moduleResolution": "Node",
 		"strict": true,
 		"allowUnreachableCode": false,
 		"skipLibCheck": true

@@ -5,17 +5,16 @@
 	"description": "Virtual DOM implementation for phtml",
 	"license": "ISC",
 	"author": "v8tenko",
-	"main": "index.js",
+	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"dev": "concurrently \"tsc w\" \"nodemon dist/index.js\""
+		"dev": "tsc -w"
 	},
 	"dependencies": {
 		"@v8tenko/utils": "workspace:^1.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.13",
-		"concurrently": "^7.6.0",
 		"typescript": "^4.9.4"
 	}
 }
