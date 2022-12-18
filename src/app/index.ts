@@ -1,11 +1,11 @@
-import { pick } from '@v8tenko/utils';
+import { createVNode, render } from '@v8tenko/vdom';
 
-const test = {
-	name: 'test',
-	lastname: 'voitenko',
-	check: 1
+import { createCounter } from './src/counter';
+
+const createApp = () => {
+	return createVNode('div', { className: 'test' }, ['test counter', createCounter()]);
 };
 
-const name = pick(test, ['name', 'lastname']);
+const root = document.getElementById('root')!;
 
-console.log(name);
+render(root, createApp);

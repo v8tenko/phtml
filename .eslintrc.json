@@ -11,7 +11,14 @@
 		"plugin:import/typescript"
 	],
 	"plugins": ["prettier", "@typescript-eslint", "import"],
-	"settings": { "import/parsers": { "@typescript-eslint/parser": [".ts"] } },
+	"settings": {
+		"import/parsers": { "@typescript-eslint/parser": [".ts", ".d.ts"] },
+		"import/resolver": {
+			"node": {
+				"extensions": [".js", ".ts", ".d.ts"]
+			}
+		}
+	},
 	"rules": {
 		"import/no-unresolved": "error",
 		"no-template-curly-in-string": "error",

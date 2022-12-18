@@ -1,9 +1,9 @@
 {
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
+		"lib": ["DOM", "ESNext"],
 		"outDir": "./dist"
 	},
-	"lib": ["dom"],
 	"include": ["./"],
 	"exclude": ["**/node_modules/**", "dist"]
 }
