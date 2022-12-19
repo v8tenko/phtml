@@ -4,6 +4,6 @@
 		"lib": ["DOM", "ESNext"],
 		"outDir": "./dist"
 	},
-	"include": ["./"],
+	"include": ["./", "../../jest.config.js"],
 	"exclude": ["**/node_modules/**", "dist"]
 }

@@ -1,4 +1,4 @@
-import { createNode, createVNode } from './node';
+import { createVNode } from './node';
 
 describe('node', () => {
 	it('should create a VNode', () => {
@@ -7,15 +7,19 @@ describe('node', () => {
 		expect(node).toEqual({
 			tagName: 'p',
 			props: { className: 'test' },
-			undefined
+			children: undefined
 		});
 	});
 
 	it('should create children', () => {
-		const node = createVNode('p', { className: 'test' }, [
+		const node = createVNode(
+			'p',
+			{ className: 'test' },
 			createVNode('p', { className: 'test1' }),
 			createVNode('p', { className: 'test2' })
-		]);
+		);
+
+		console.log(node);
 
 		expect(node).toEqual({
 			tagName: 'p',
@@ -31,14 +35,5 @@ describe('node', () => {
 				}
 			]
 		});
-	});
-
-	it('should create a DOM tree', () => {
-		const node = createVNode('div', { className: 'test' }, [
-			createVNode('p', { className: 'test1' }),
-			createVNode('p', { className: 'test2' })
-		]);
-
-		console.log(createNode(node));
 	});
 });

@@ -1,11 +1,11 @@
 import './setup';
-import { Children, VNode, VNodeProps } from '../typings/Node';
+import { VNode, VNodeProps } from '../typings/node';
 
-export const createVNode = (tagName: string, props: VNodeProps = {}, children: Children = undefined): VNode => {
+export const createVNode = (tagName: string, props: VNodeProps | null = null, ...children: VNode[]): VNode => {
 	return {
 		tagName,
-		props,
-		children
+		props: props || {},
+		children: children.length ? children : undefined
 	};
 };
 

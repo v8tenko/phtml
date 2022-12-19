@@ -1,5 +1,5 @@
 import { createNode } from '../node/node';
-import { VNode } from '../typings/Node';
+import { VNode } from '../typings/node';
 
 import { patchNode } from './patch';
 

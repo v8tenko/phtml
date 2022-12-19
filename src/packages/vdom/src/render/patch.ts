@@ -1,5 +1,5 @@
 import { createNode } from '../node/node';
-import { Children, VNode } from '../typings/Node';
+import { Children, VNode } from '../typings/node';
 
 function listener(event: any) {
 	// @ts-ignore
