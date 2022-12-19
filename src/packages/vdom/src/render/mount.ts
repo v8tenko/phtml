@@ -1,27 +1,10 @@
 import { createNode } from '../node/node';
 import { VNode } from '../typings/node';
 
-import { patchNode } from './patch';
-
-export let vDomRoot: VNode | undefined;
-
-export type App = () => VNode;
-
-export let patchChanges: (() => void) | undefined;
-
-export const render = (target: HTMLElement, app: App) => {
-	vDomRoot = app();
-	const domNodeRoot = createNode(vDomRoot);
+export const mount = (target: HTMLElement, vNode: VNode): HTMLElement => {
+	const domNodeRoot = createNode(vNode);
 
 	target.replaceWith(domNodeRoot);
 
-	let domRoot: HTMLElement = domNodeRoot as HTMLElement;
-
-	patchChanges = () => {
-		const nextApp = app();
-		const newAppDom = patchNode(domRoot, vDomRoot!, nextApp);
-
-		vDomRoot = nextApp;
-		domRoot = newAppDom as HTMLElement;
-	};
+	return domNodeRoot as HTMLElement;
 };

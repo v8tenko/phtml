@@ -19,8 +19,6 @@ describe('node', () => {
 			createVNode('p', { className: 'test2' })
 		);
 
-		console.log(node);
-
 		expect(node).toEqual({
 			tagName: 'p',
 			props: { className: 'test' },

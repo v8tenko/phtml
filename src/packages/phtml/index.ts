@@ -1,11 +1,5 @@
-import { pick } from '@v8tenko/utils';
+import PHTML from './src/phtml/phtml';
 
-const test = {
-	name: 'test',
-	lastname: 'voitenko',
-	check: 1
-};
+export { useState } from './src/hooks/useState';
 
-const name = pick(test, ['name', 'lastname', 'check']);
-
-console.log(name);
+export default PHTML;

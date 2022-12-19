@@ -1,30 +1,18 @@
+import { array } from '@v8tenko/utils';
+
 import { createNode } from '../node/node';
 import { Children, VNode } from '../typings/node';
-
-function listener(event: any) {
-	// @ts-ignore
-	return this[event.type](event);
-}
 
 // cos we really need it
 // eslint-disable-next-line max-params
 const patchProp = (domNode: HTMLElement, key: string, oldValue: any, nextValue: any) => {
-	if (!nextValue) {
-		domNode.removeAttribute(key);
+	if (key.startsWith('on')) {
+		(domNode as any)[key] = nextValue;
 
 		return;
 	}
-
-	if (key.startsWith('on')) {
-		const eventName = key.slice(2);
-
-		(domNode as any)[eventName] = nextValue;
-
-		if (!oldValue) {
-			domNode.removeEventListener(eventName, listener);
-		} else if (!nextValue) {
-			domNode.addEventListener(eventName, listener);
-		}
+	if (nextValue === null || nextValue === false) {
+		domNode.removeAttribute(key);
 
 		return;
 	}
@@ -44,8 +32,8 @@ const patchProps = (domNode: HTMLElement, oldProps: any, nextProps: any) => {
 };
 
 const patchChildren = (domNode: HTMLElement, oldChildren: Children, nextChildren: Children) => {
-	const oldChildrenList = Array.isArray(oldChildren) ? oldChildren : [oldChildren!];
-	const nextChildrenList = Array.isArray(nextChildren) ? nextChildren : [nextChildren!];
+	const oldChildrenList = array(oldChildren!);
+	const nextChildrenList = array(nextChildren!);
 
 	domNode.childNodes.forEach((child, i) => {
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define

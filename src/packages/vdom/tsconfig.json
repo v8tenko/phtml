@@ -4,8 +4,7 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"module": "CommonJS",
-		"jsx": "preserve",
-		"jsxFactory": "createVNode"
+		"typeRoots": ["./node_modules/@types", "./src/typings"]
 	},
 	"include": ["./"],
 	"exclude": ["**/node_modules/**", "dist"]

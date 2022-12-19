@@ -1,5 +1,7 @@
-import './setup';
+import { array } from '@v8tenko/utils';
+
 import { VNode, VNodeProps } from '../typings/node';
+import './setup';
 
 export const createVNode = (tagName: string, props: VNodeProps | null = null, ...children: VNode[]): VNode => {
 	return {
@@ -45,7 +47,7 @@ export const createNode = (node: VNode): Node => {
 			continue;
 		}
 
-		const children = Array.isArray(element.children) ? element.children : [element.children];
+		const children = array(element.children);
 
 		for (let index = children.length - 1; index >= 0; index--) {
 			stack.push({

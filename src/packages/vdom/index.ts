@@ -1,7 +1,7 @@
-import './src/typings/jsx';
-
 export { createNode, createVNode } from './src/node/node';
 
-export { createState } from './src/state/state';
+export { mount } from './src/render/mount';
 
-export { render } from './src/render/mount';
+export { patchNode } from './src/render/patch';
+
+export type { VNode, VNodeProps, Children } from './src/typings/node';

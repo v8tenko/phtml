@@ -3,7 +3,7 @@
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": { "sourceType": "module" },
 	"env": { "browser": true, "node": true, "commonjs": true, "es6": true, "mocha": true, "jquery": true },
-	"globals": { "Promise": true, "beforeAll": true, "afterAll": true, "expect": true, "jest": true },
+	"globals": { "Promise": true, "beforeAll": true, "afterAll": true, "expect": true, "jest": true, "PHTML": true },
 	"extends": [
 		"eslint:recommended",
 		"plugin:prettier/recommended",
@@ -71,7 +71,6 @@
 		"no-new-object": "error",
 		"no-self-assign": "error",
 		"no-unneeded-ternary": "warn",
-		"spaced-comment": ["error", "always"],
 		"constructor-super": "error",
 		"no-class-assign": "error",
 		"no-const-assign": "error",
