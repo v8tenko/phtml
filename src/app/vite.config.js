@@ -1,3 +1,4 @@
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -8,7 +9,7 @@ export default defineConfig({
 			},
 			output: {
 				dir: '../../dist',
-				format: 'iife'
+				format: 'es'
 			}
 		},
 		emptyOutDir: true
@@ -19,5 +20,15 @@ export default defineConfig({
 	},
 	json: {
 		stringify: true
-	}
+	},
+	plugins: [
+		react({
+			jsxRuntime: 'automatic',
+			jsxImportSource: '@v8tenko/vdom',
+			babel: {
+				include: '**/*.tsx',
+				babelrc: true
+			}
+		})
+	]
 });

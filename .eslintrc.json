@@ -3,7 +3,7 @@
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": { "sourceType": "module" },
 	"env": { "browser": true, "node": true, "commonjs": true, "es6": true, "mocha": true, "jquery": true },
-	"globals": { "Promise": true, "beforeAll": true, "afterAll": true, "expect": true, "jest": true, "PHTML": true },
+	"globals": { "Promise": true, "beforeAll": true, "afterAll": true, "expect": true, "jest": true },
 	"extends": [
 		"eslint:recommended",
 		"plugin:prettier/recommended",
@@ -12,10 +12,10 @@
 	],
 	"plugins": ["prettier", "@typescript-eslint", "import"],
 	"settings": {
-		"import/parsers": { "@typescript-eslint/parser": [".ts", ".d.ts"] },
+		"import/parsers": { "@typescript-eslint/parser": [".ts", ".tsx", ".d.ts"] },
 		"import/resolver": {
 			"node": {
-				"extensions": [".js", ".ts", ".d.ts"]
+				"extensions": [".js", ".ts", ".tsx", ".d.ts"]
 			}
 		}
 	},

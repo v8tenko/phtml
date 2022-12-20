@@ -1,12 +1,12 @@
 import { patchNode, mount, VNode } from '@v8tenko/vdom';
 
-import { HookState, PureHookState } from '../hooks/hooks.states';
+import { HookState, PureHookState } from '../hooks/hooks.state';
 
 namespace PHTML {
+	let app: Component | undefined;
 	let oldVNodeRoot: VNode | undefined;
 	let oldDomRoot: HTMLElement | undefined;
 	let currentHookIndex = 0;
-	let app: Component | undefined;
 	const hooksState: Record<number, HookState<any>> = {};
 
 	export abstract class DOM {
@@ -15,12 +15,17 @@ namespace PHTML {
 			app = component;
 			const nextVNodeRoot = app();
 
+			console.log(oldVNodeRoot, nextVNodeRoot);
+
 			if (!oldVNodeRoot) {
 				oldDomRoot = mount(target, nextVNodeRoot);
 				oldVNodeRoot = nextVNodeRoot;
+
+				return;
 			}
 
 			oldDomRoot = patchNode(oldDomRoot!, oldVNodeRoot, nextVNodeRoot) as HTMLElement | undefined;
+			oldVNodeRoot = nextVNodeRoot;
 		}
 
 		static update() {

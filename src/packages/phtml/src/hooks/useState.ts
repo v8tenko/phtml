@@ -2,7 +2,7 @@ import { assert } from '@v8tenko/utils';
 
 import PHTML from '../phtml/phtml';
 
-import { UseState } from './hooks.states';
+import { UseState } from './hooks.state';
 
 type UseStateReturn<T> = [T, (newState: T) => void];
 

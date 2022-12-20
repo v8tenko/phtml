@@ -1,6 +1,8 @@
-type Children = VNode | VNode[] | undefined;
+type Children = VNode | VNode[] | null;
 
-type VNodeProps = Partial<HTMLElement>;
+export type PrimitiveVNode = string | number | boolean;
+
+type VNodeProps = Partial<HTMLElement> & { children?: Children };
 
 type VNode =
 	| {
@@ -8,6 +10,7 @@ type VNode =
 			props: VNodeProps;
 			children: Children;
 	  }
-	| string;
+	| PrimitiveVNode
+	| null;
 
 export type { Children, VNodeProps, VNode };

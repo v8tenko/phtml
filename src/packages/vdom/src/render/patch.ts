@@ -1,32 +1,49 @@
 import { array } from '@v8tenko/utils';
 
-import { createNode } from '../node/node';
-import { Children, VNode } from '../typings/node';
+import { createNode, isPrimitiveVNode, shouldRenderVNode } from '../node/node';
+import { Children, VNode, VNodeProps } from '../typings/node';
 
-// cos we really need it
-// eslint-disable-next-line max-params
-const patchProp = (domNode: HTMLElement, key: string, oldValue: any, nextValue: any) => {
+const matchJSXPropToHTMLProp = (prop: string): string => {
+	if (prop.startsWith('on')) {
+		return prop.toLowerCase();
+	}
+
+	if (prop === 'className') {
+		return 'class';
+	}
+
+	return prop;
+};
+
+const patchProp = <Key extends keyof HTMLElement, Value = HTMLElement[Key]>(
+	domNode: HTMLElement,
+	key: Key,
+	nextValue: Value
+) => {
+	const domKey = matchJSXPropToHTMLProp(key);
+
 	if (key.startsWith('on')) {
-		(domNode as any)[key] = nextValue;
+		// @todo wtf? does it ok?
+		(domNode as any)[domKey] = nextValue;
 
 		return;
 	}
 	if (nextValue === null || nextValue === false) {
-		domNode.removeAttribute(key);
+		domNode.removeAttribute(domKey);
 
 		return;
 	}
 
-	domNode.setAttribute(key, nextValue);
+	domNode.setAttribute(domKey, nextValue as any);
 };
 
 // @todo can we reaaly make it any? or cast to keyof VNodeProps
-const patchProps = (domNode: HTMLElement, oldProps: any, nextProps: any) => {
-	const allProps = { ...oldProps, ...nextProps };
+export const patchProps = (domNode: HTMLElement, oldProps: VNodeProps, nextProps: VNodeProps) => {
+	const allProps: VNodeProps = { ...oldProps, ...nextProps };
 
-	Object.keys(allProps).forEach((key) => {
+	(Object.keys(allProps) as (keyof VNodeProps)[]).forEach((key) => {
 		if (oldProps[key] !== nextProps[key]) {
-			patchProp(domNode, key, oldProps[key], nextProps[key]);
+			patchProp(domNode, key, nextProps[key]);
 		}
 	});
 };
@@ -35,28 +52,52 @@ const patchChildren = (domNode: HTMLElement, oldChildren: Children, nextChildren
 	const oldChildrenList = array(oldChildren!);
 	const nextChildrenList = array(nextChildren!);
 
-	domNode.childNodes.forEach((child, i) => {
+	let notEmptyIndex = 0;
+	const domChildNodes = domNode.childNodes;
+
+	for (let i = 0; i < oldChildrenList.length; i++) {
+		const child = domChildNodes[notEmptyIndex];
+
+		if (!shouldRenderVNode(oldChildrenList[i])) {
+			const nextChildDomNode = createNode(nextChildrenList[i]);
+
+			if (nextChildDomNode) {
+				domNode.insertBefore(nextChildDomNode, child);
+				notEmptyIndex++;
+			}
+
+			continue;
+		}
+
+		if (shouldRenderVNode(nextChildrenList[i])) {
+			notEmptyIndex++;
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		patchNode(child as HTMLElement, oldChildrenList[i], nextChildrenList[i]);
-	});
+	}
 
 	nextChildrenList.slice(oldChildrenList.length).forEach((vChild) => {
-		domNode.appendChild(createNode(vChild));
+		const domChild = createNode(vChild);
+
+		if (domChild) {
+			domNode.appendChild(domChild);
+		}
 	});
 };
 
-const patchNode = (domNode: HTMLElement, oldVNode: VNode, nextVNode: VNode | undefined): Node | undefined => {
-	if (!nextVNode) {
+const patchNode = (domNode: HTMLElement, oldVNode: VNode, nextVNode: VNode): Node | null => {
+	if (!shouldRenderVNode(nextVNode)) {
 		domNode.remove();
 
-		return undefined;
+		return null;
 	}
 
-	if (typeof oldVNode === 'string' || typeof nextVNode === 'string') {
+	if (isPrimitiveVNode(oldVNode) || isPrimitiveVNode(nextVNode)) {
 		if (oldVNode !== nextVNode) {
 			const nextDomNode = createNode(nextVNode);
 
-			domNode.replaceWith(nextDomNode);
+			domNode.replaceWith(nextDomNode!);
 
 			return nextDomNode;
 		}
@@ -64,16 +105,16 @@ const patchNode = (domNode: HTMLElement, oldVNode: VNode, nextVNode: VNode | und
 		return domNode;
 	}
 
-	if (oldVNode.tagName !== nextVNode.tagName) {
+	if (oldVNode!.tagName !== nextVNode!.tagName) {
 		const nextDomNode = createNode(nextVNode);
 
-		domNode.replaceWith(nextDomNode);
+		domNode.replaceWith(nextDomNode!);
 
 		return nextDomNode;
 	}
 
-	patchProps(domNode, oldVNode.props, nextVNode.props);
-	patchChildren(domNode, oldVNode.children, nextVNode.children);
+	patchProps(domNode, oldVNode!.props, nextVNode!.props);
+	patchChildren(domNode, oldVNode!.children, nextVNode!.children);
 
 	return domNode;
 };
