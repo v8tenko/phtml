@@ -11,7 +11,16 @@
 ## DoD
 
 -   [x] Virtual DOM
+-   [] Fragments
+-   [] List keys
+-   [] Ref forwarding
+-   Context
+    -   [] Provider / Consumer
+    -   [] useContext
 -   [x] Optional render
-    -   Hooks:
+-   Hooks
     -   [x] useState
     -   [x] useMemo
+    -   [] useReducer
+    -   [] useEffect
+    -   [] useRef

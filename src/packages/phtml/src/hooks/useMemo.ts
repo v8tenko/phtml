@@ -1,5 +1,4 @@
-import { assert } from '@v8tenko/utils';
-import _ from 'lodash';
+import { assert, isEqual } from '@v8tenko/utils';
 
 import PHTML from '../phtml/phtml';
 
@@ -20,7 +19,7 @@ export const useMemo = <T>(compution: Compution<T>, dependencies: any[]): T => {
 
 	assert(oldDependencies.length === dependencies.length, 'useMemo hook error: unable to use dynimic dependencies');
 
-	if (_.isEqual(dependencies, oldDependencies)) {
+	if (isEqual(dependencies, oldDependencies)) {
 		return computed;
 	}
 

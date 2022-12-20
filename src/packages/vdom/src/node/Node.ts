@@ -6,11 +6,11 @@ import './setup';
 
 const NOT_RENDER_VALUES = [null, undefined, false, ''] as const;
 
-type CreateVNode = () => VNode;
+type CreateVNode = (props: any) => VNode;
 
-export const createVNode = (tagName: string | CreateVNode, props: VNodeProps | null = null): VNode => {
+export const createVNode = (tagName: string | CreateVNode, props: VNodeProps | null = null) => {
 	if (typeof tagName !== 'string') {
-		return tagName();
+		return tagName(props);
 	}
 	const { children } = props || {};
 

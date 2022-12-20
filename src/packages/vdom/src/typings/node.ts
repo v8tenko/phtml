@@ -2,7 +2,12 @@ type Children = VNode | VNode[] | null;
 
 export type PrimitiveVNode = string | number | boolean;
 
-type VNodeProps = Partial<HTMLElement> & { children?: Children };
+type SyntheticProps = {
+	value: string | boolean;
+	children: Children;
+};
+
+type VNodeProps = Partial<HTMLElement & SyntheticProps>;
 
 type VNode =
 	| {

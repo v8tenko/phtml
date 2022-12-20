@@ -1,6 +1,7 @@
 import { array } from '@v8tenko/utils';
 
 import { createNode, isPrimitiveVNode, shouldRenderVNode } from '../node/node';
+import { configureSpectificProps } from '../node/synthetic';
 import { Children, VNode, VNodeProps } from '../typings/node';
 
 const matchJSXPropToHTMLProp = (prop: string): string => {
@@ -15,11 +16,7 @@ const matchJSXPropToHTMLProp = (prop: string): string => {
 	return prop;
 };
 
-const patchProp = <Key extends keyof HTMLElement, Value = HTMLElement[Key]>(
-	domNode: HTMLElement,
-	key: Key,
-	nextValue: Value
-) => {
+const patchProp = <Key extends keyof VNodeProps>(domNode: HTMLElement, key: Key, nextValue: VNodeProps[Key]) => {
 	const domKey = matchJSXPropToHTMLProp(key);
 
 	if (key.startsWith('on')) {
@@ -46,6 +43,8 @@ export const patchProps = (domNode: HTMLElement, oldProps: VNodeProps, nextProps
 			patchProp(domNode, key, nextProps[key]);
 		}
 	});
+
+	configureSpectificProps(domNode, nextProps);
 };
 
 const patchChildren = (domNode: HTMLElement, oldChildren: Children, nextChildren: Children) => {

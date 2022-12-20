@@ -1,5 +1,5 @@
 export const List: Component = () => {
-	const array = new Array(5).fill(0).map((_, i) => i);
+	const array = new Array(3).fill(0).map((_, i) => i);
 
 	return (
 		<div>

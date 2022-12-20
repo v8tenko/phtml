@@ -73,20 +73,16 @@ importers:
 
   src/packages/phtml:
     specifiers:
-      '@types/lodash': ^4.14.191
       '@types/node': ^18.11.13
       '@v8tenko/utils': workspace:^1.0.0
       '@v8tenko/vdom': workspace:^1.0.0
       concurrently: ^7.6.0
-      lodash: ^4.17.21
       nodemon: ^2.0.20
       typescript: ^4.9.4
     dependencies:
       '@v8tenko/utils': link:../utils
       '@v8tenko/vdom': link:../vdom
-      lodash: 4.17.21
     devDependencies:
-      '@types/lodash': 4.14.191
       '@types/node': 18.11.13
       concurrently: 7.6.0
       nodemon: 2.0.20
@@ -2031,10 +2027,6 @@ packages:
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
-    dev: true
-
-  /@types/lodash/4.14.191:
-    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
     dev: true
 
   /@types/node/18.11.13:
@@ -4571,6 +4563,7 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: true
 
   /log-update/4.0.0:
     resolution: {integrity: sha512-9fkkDevMefjg0mmzWFBW8YkFP91OrizzkW3diF7CpG+S2EYdy4+TVfGwz1zeF8x7hCx1ovSPTOE9Ngib74qqUg==}
