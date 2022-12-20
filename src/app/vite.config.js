@@ -23,8 +23,6 @@ export default defineConfig({
 	},
 	plugins: [
 		react({
-			jsxRuntime: 'automatic',
-			jsxImportSource: '@v8tenko/vdom',
 			babel: {
 				include: '**/*.tsx',
 				babelrc: true
