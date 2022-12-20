@@ -1,9 +1,12 @@
-import { useState } from '@v8tenko/phtml';
+import { useMemo, useState } from '@v8tenko/phtml';
 
 import { List } from './list';
 
 export const Counter: Component = () => {
 	const [count, setCount] = useState(0);
+	const momoizedCounter = useMemo(() => {
+		return count + 10;
+	}, []);
 
 	return (
 		<div className="counter">
@@ -11,7 +14,7 @@ export const Counter: Component = () => {
 			<button onClick={() => setCount(count + 1)}>+</button>
 			<button onClick={() => setCount(count - 1)}>-</button>
 			{count % 2 == 0 && <p>hello world from 0</p>}
-			<p>{count}</p>
+			<p>{momoizedCounter}</p>
 			<List />
 		</div>
 	);

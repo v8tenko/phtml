@@ -1,13 +1,19 @@
+import { assert } from '@v8tenko/utils';
 import { patchNode, mount, VNode } from '@v8tenko/vdom';
 
-import { HookState, PureHookState } from '../hooks/hooks.state';
+import { HookState, IndexedHookState } from '../hooks/hooks.state';
+
+type PatchHookStateOptions = {
+	// Should use PHTML.DOM.update() after hook's data changed
+	update?: boolean;
+};
 
 namespace PHTML {
 	let app: Component | undefined;
 	let oldVNodeRoot: VNode | undefined;
 	let oldDomRoot: HTMLElement | undefined;
 	let currentHookIndex = 0;
-	const hooksState: Record<number, HookState<any>> = {};
+	const hooksState: Record<number, IndexedHookState<any>> = {};
 
 	export abstract class DOM {
 		static render(target: HTMLElement, component: Component<{}>) {
@@ -37,16 +43,18 @@ namespace PHTML {
 		}
 	}
 
-	export function getHookState<T>(defaultState: PureHookState<T>): HookState<T> {
+	export function getHookState<T, State extends HookState<T>>(defaultState: State): IndexedHookState<State> {
 		if (hooksState[currentHookIndex]) {
 			const currentHookState = hooksState[currentHookIndex];
+
+			assert(currentHookState.type === defaultState.type, 'PHTML error: hooks data is corrupted');
 
 			currentHookIndex++;
 
 			return currentHookState;
 		}
 
-		const currentHookState = { ...defaultState, id: currentHookIndex };
+		const currentHookState = { ...defaultState, id: currentHookIndex } as IndexedHookState<State>;
 
 		hooksState[currentHookIndex] = currentHookState;
 		currentHookIndex++;
@@ -54,9 +62,15 @@ namespace PHTML {
 		return currentHookState;
 	}
 
-	export function patchHookState<T>(id: number, nextHookState: PureHookState<T>) {
-		hooksState[id] = { id, ...nextHookState };
-		PHTML.DOM.update();
+	export function patchHookState<T>(
+		id: number,
+		nextHookState: Partial<HookState<T>>,
+		options: PatchHookStateOptions = {}
+	) {
+		Object.assign(hooksState[id], nextHookState);
+		if (options.update) {
+			PHTML.DOM.update();
+		}
 	}
 }
 
