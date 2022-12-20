@@ -8,7 +8,7 @@ export default defineConfig({
 				main: './index.html'
 			},
 			output: {
-				dir: '../../dist',
+				dir: 'dist',
 				format: 'es'
 			}
 		},

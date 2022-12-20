@@ -15,8 +15,6 @@ namespace PHTML {
 			app = component;
 			const nextVNodeRoot = app();
 
-			console.log(oldVNodeRoot, nextVNodeRoot);
-
 			if (!oldVNodeRoot) {
 				oldDomRoot = mount(target, nextVNodeRoot);
 				oldVNodeRoot = nextVNodeRoot;
