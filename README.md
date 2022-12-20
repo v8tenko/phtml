@@ -3,14 +3,15 @@
 ## Setup
 
 ```bash
-    npm i
-    npm run build
+    npm i -g pnpm
+    pnpm run build
+    pnpm run dev
 ```
 
 ## DoD
 
 -   [x] Virtual DOM
 -   [x] Optional render
-    -   [] Hooks:
+    -   Hooks:
     -   [x] useState
     -   [x] useMemo
