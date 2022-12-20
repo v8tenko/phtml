@@ -11,3 +11,6 @@
 
 -   [x] Virtual DOM
 -   [x] Optional render
+    -   [] Hooks:
+    -   [x] useState
+    -   [x] useMemo
