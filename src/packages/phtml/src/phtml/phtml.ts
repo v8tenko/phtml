@@ -54,7 +54,7 @@ namespace PHTML {
 			return currentHookState;
 		}
 
-		const currentHookState = { ...defaultState, id: currentHookIndex } as IndexedHookState<State>;
+		const currentHookState = { ...defaultState, id: currentHookIndex };
 
 		hooksState[currentHookIndex] = currentHookState;
 		currentHookIndex++;

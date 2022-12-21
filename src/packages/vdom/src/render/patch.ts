@@ -1,7 +1,7 @@
 import { array } from '@v8tenko/utils';
 
 import { createNode, isPrimitiveVNode, shouldRenderVNode } from '../node/node';
-import { configureSpectificProps } from '../node/synthetic';
+import { configureSyntheticProps } from '../node/synthetic';
 import { Children, VNode, VNodeProps } from '../typings/node';
 
 const matchJSXPropToHTMLProp = (prop: string): string => {
@@ -44,7 +44,7 @@ export const patchProps = (domNode: HTMLElement, oldProps: VNodeProps, nextProps
 		}
 	});
 
-	configureSpectificProps(domNode, nextProps);
+	configureSyntheticProps(domNode, nextProps);
 };
 
 const patchChildren = (domNode: HTMLElement, oldChildren: Children, nextChildren: Children) => {
