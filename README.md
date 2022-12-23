@@ -12,7 +12,7 @@
 
 -   [x] Virtual DOM
 -   [] Fragments
--   [х] List keys
+-   [x] List keys
 -   [] Ref forwarding
 -   Context
     -   [] Provider / Consumer
