@@ -1,4 +1,4 @@
-# React implementationCancel changes
+# React implementation
 
 ## Setup
 
