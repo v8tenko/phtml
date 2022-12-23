@@ -63,7 +63,7 @@
 		"camelcase": "off",
 		"consistent-this": ["error", "_this"],
 		"id-blacklist": "off",
-		"max-depth": ["warn", 4],
+		"max-depth": ["warn", 3],
 		"max-params": ["warn", 3],
 		"max-statements-per-line": ["error", { "max": 1 }],
 		"newline-after-var": "warn",

@@ -1,4 +1,4 @@
-import { createVNode } from './src/node/node';
+import { Node } from './src/node/node';
 
-export const jsx = createVNode;
-export const jsxs = createVNode;
+export const jsx = Node.createVNode;
+export const jsxs = Node.createVNode;

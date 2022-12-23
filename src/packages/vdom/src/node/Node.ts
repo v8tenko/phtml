@@ -1,98 +1,140 @@
 import { array } from '@v8tenko/utils';
 
-import { patchProps } from '../render/patch';
-import { PrimitiveVNode, VNode, VNodeProps } from '../typings/node';
+import { VDOM } from '../render/patch';
+import { PrimitiveVNode, VNode, VNodeProps, Key } from '../typings/node';
 import './setup';
 
-const NOT_RENDER_VALUES = [null, undefined, false, ''] as const;
+export namespace Node {
+	const NOT_RENDER_VALUES = [null, undefined, false, ''] as const;
 
-type CreateVNode = (props: any) => VNode;
+	export const isPrimitiveVNode = (vNode: VNode): vNode is PrimitiveVNode =>
+		vNode !== null && typeof vNode !== 'object';
 
-export const createVNode = (tagName: string | CreateVNode, props: VNodeProps | null = null) => {
-	if (typeof tagName !== 'string') {
-		return tagName(props);
-	}
-	const { children } = props || {};
+	export const isVNodeList = (vNode: VNode | VNode[]): vNode is VNode[] => Array.isArray(vNode);
+	export const isVNode = (vNode: VNode | VNode[]): vNode is VNode => !isVNodeList(vNode);
+	export const hasChildren = (vNode: VNode): boolean => {
+		if (vNode === null) {
+			return false;
+		}
 
-	if (props?.children !== null && props?.children !== undefined) {
-		delete props.children;
-	}
+		if (isPrimitiveVNode(vNode)) {
+			return false;
+		}
 
-	return {
-		tagName,
-		props: props || {},
-		children: children !== undefined ? children : null
+		if (typeof vNode.children === 'number') {
+			return true;
+		}
+
+		return Boolean(vNode?.children);
 	};
-};
+	export const shouldRenderVNode = (vNode: VNode | VNode[]): boolean => {
+		const isVNodeList = Array.isArray(vNode);
 
-export const isPrimitiveVNode = (vNode: VNode): vNode is PrimitiveVNode => vNode !== null && typeof vNode !== 'object';
-export const hasChildren = (vNode: VNode): boolean => {
-	if (vNode === null) {
-		return false;
-	}
-
-	if (isPrimitiveVNode(vNode)) {
-		return false;
-	}
-
-	if (typeof vNode.children === 'number') {
-		return true;
-	}
-
-	return Boolean(vNode?.children);
-};
-export const shouldRenderVNode = (vNode: VNode): boolean => !NOT_RENDER_VALUES.includes(vNode as any);
-
-const makeNodeFromVNode = (vNode: VNode): Node | null => {
-	if (!shouldRenderVNode(vNode)) {
-		return null;
-	}
-	if (isPrimitiveVNode(vNode)) {
-		return document.createTextNode(vNode.toString());
-	}
-
-	const domNode = document.createElement(vNode!.tagName);
-
-	patchProps(domNode, {}, vNode!.props);
-
-	return domNode;
-};
-
-export const createNode = (node: VNode): Node | null => {
-	const stack = [{ root: null as Node | null, node: node as VNode }];
-	let domNodeRoot: Node | undefined;
-
-	while (stack.length) {
-		const { node: element, root } = stack.pop()!;
-		const domNode = makeNodeFromVNode(element);
-
-		if (!domNode) {
-			continue;
+		if (isVNodeList) {
+			return true;
 		}
 
-		if (!root) {
-			domNodeRoot = domNode;
+		return !NOT_RENDER_VALUES.includes(vNode as any);
+	};
+
+	export const keys = (vNodeList: VNode[]): (Key | undefined)[] => {
+		return vNodeList.map((childVNode) => {
+			if (isPrimitiveVNode(childVNode)) {
+				return undefined;
+			}
+
+			return childVNode?.props.key;
+		});
+	};
+
+	export const areKeysDifferent = (vNodeList: VNode[]): boolean => {
+		return [...new Set(keys(vNodeList))].length === vNodeList.length;
+	};
+
+	type CreateVNode = (props: any) => VNode;
+
+	export const createVNode = (
+		tagName: string | CreateVNode,
+		props: VNodeProps | null = null,
+		key: Key | null = null
+	) => {
+		if (typeof tagName !== 'string') {
+			const vNode = tagName(props);
+
+			Object.assign((vNode as any).props, { key });
+
+			return vNode;
+		}
+		const { children } = props || {};
+
+		if (props?.children !== null && props?.children !== undefined) {
+			delete props.children;
 		}
 
-		root?.appendChild(domNode);
+		return {
+			tagName,
+			props: props || {},
+			children: children !== undefined ? children : null
+		};
+	};
 
-		if (isPrimitiveVNode(element) || !hasChildren(element)) {
-			continue;
+	const makeNodeFromVNode = (vNode: VNode): Node | null => {
+		if (!shouldRenderVNode(vNode)) {
+			return null;
+		}
+		if (isPrimitiveVNode(vNode)) {
+			return document.createTextNode(vNode.toString());
 		}
 
-		const children = array(element!.children!);
+		const domNode = document.createElement(vNode!.tagName);
 
-		for (let index = children.length - 1; index >= 0; index--) {
-			if (!shouldRenderVNode(children[index])) {
+		VDOM.patchProps(domNode, {}, vNode!.props);
+
+		return domNode;
+	};
+
+	export const createNode = (vNode: VNode): Node | null => {
+		const stack = [{ root: null as Node | null, node: vNode }];
+		let domNodeRoot: Node | undefined;
+
+		while (stack.length) {
+			const { node: element, root } = stack.pop()!;
+
+			const domNode = makeNodeFromVNode(element);
+
+			if (!domNode) {
 				continue;
 			}
 
-			stack.push({
-				root: domNode,
-				node: children[index]
-			});
-		}
-	}
+			if (!root) {
+				domNodeRoot = domNode;
+			}
 
-	return domNodeRoot!;
-};
+			root?.appendChild(domNode);
+
+			if (isPrimitiveVNode(element) || !hasChildren(element)) {
+				continue;
+			}
+
+			// Used for rendering lists
+			const children = array(element!.children!).flat();
+
+			for (let index = children.length - 1; index >= 0; index--) {
+				if (!shouldRenderVNode(children[index])) {
+					continue;
+				}
+
+				stack.push({
+					root: domNode,
+					node: children[index]
+				});
+			}
+		}
+
+		return domNodeRoot!;
+	};
+
+	export const createNodeList = (vNodeList: VNode | VNode[]): (Node | null)[] => {
+		return array(vNodeList).map(createNode);
+	};
+}

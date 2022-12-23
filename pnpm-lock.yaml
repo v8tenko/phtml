@@ -45,6 +45,7 @@ importers:
       '@babel/plugin-transform-typescript': ^7.20.2
       '@babel/preset-env': ^7.20.2
       '@types/node': ^18.11.13
+      '@v8tenko/logs': workspace:^1.0.0
       '@v8tenko/phtml': workspace:^1.0.0
       '@v8tenko/utils': workspace:^1.0.0
       '@v8tenko/vdom': workspace:^1.0.0
@@ -54,6 +55,7 @@ importers:
       typescript: ^4.9.4
       vite: ^4.0.1
     dependencies:
+      '@v8tenko/logs': link:../packages/logs
       '@v8tenko/phtml': link:../packages/phtml
       '@v8tenko/utils': link:../packages/utils
       '@v8tenko/vdom': link:../packages/vdom
@@ -70,6 +72,14 @@ importers:
       nodemon: 2.0.20
       typescript: 4.9.4
       vite: 4.0.1_@types+node@18.11.13
+
+  src/packages/logs:
+    specifiers:
+      colors: ^1.4.0
+      typescript: ^4.9.4
+    devDependencies:
+      colors: 1.4.0
+      typescript: 4.9.4
 
   src/packages/phtml:
     specifiers:
@@ -104,6 +114,7 @@ importers:
       '@types/jest': ^29.2.4
       '@types/jsdom': ^20.0.1
       '@types/node': ^18.11.13
+      '@v8tenko/logs': workspace:^1.0.0
       '@v8tenko/utils': workspace:^1.0.0
       jest: ^29.3.1
       jest-environment-jsdom: ^29.3.1
@@ -119,6 +130,7 @@ importers:
       '@types/jest': 29.2.4
       '@types/jsdom': 20.0.1
       '@types/node': 18.11.13
+      '@v8tenko/logs': link:../logs
       jest: 29.3.1_@types+node@18.11.13
       jest-environment-jsdom: 29.3.1
       typescript: 4.9.4
@@ -2658,6 +2670,11 @@ packages:
 
   /colorette/2.0.19:
     resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
+    dev: true
+
+  /colors/1.4.0:
+    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
+    engines: {node: '>=0.1.90'}
     dev: true
 
   /combined-stream/1.0.8:

@@ -1,8 +1,8 @@
-import { createNode } from '../node/node';
+import { Node } from '../node/node';
 import { VNode } from '../typings/node';
 
 export const mount = (target: HTMLElement, vNode: VNode): HTMLElement => {
-	const domNodeRoot = createNode(vNode);
+	const domNodeRoot = Node.createNode(vNode);
 
 	try {
 		target.replaceWith(domNodeRoot!);

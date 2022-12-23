@@ -1,121 +1,271 @@
-import { array } from '@v8tenko/utils';
+import { array, assertNever, diff, isNull } from '@v8tenko/utils';
 
-import { createNode, isPrimitiveVNode, shouldRenderVNode } from '../node/node';
-import { configureSyntheticProps } from '../node/synthetic';
-import { Children, VNode, VNodeProps } from '../typings/node';
+import { Node } from '../node/node';
+import { applySyntheticProps, mapJSXPropToHTMLProp } from '../node/synthetic';
+import { Children, VNode, VNodeProps, VNodeKey } from '../typings/node';
 
-const matchJSXPropToHTMLProp = (prop: string): string => {
-	if (prop.startsWith('on')) {
-		return prop.toLowerCase();
-	}
+import { DOM } from './patch.dom';
 
-	if (prop === 'className') {
-		return 'class';
-	}
+export namespace VDOM {
+	type ChangedProps<Key extends VNodeKey> = {
+		old?: VNodeProps[Key];
+		next?: VNodeProps[Key];
+	};
 
-	return prop;
-};
+	const handleEventListener = <Key extends VNodeKey>(
+		domNode: HTMLElement,
+		key: Key,
+		{ old, next }: ChangedProps<Key>
+	) => {
+		const eventName = key.toLowerCase().slice(2);
 
-const patchProp = <Key extends keyof VNodeProps>(domNode: HTMLElement, key: Key, nextValue: VNodeProps[Key]) => {
-	const domKey = matchJSXPropToHTMLProp(key);
-
-	if (key.startsWith('on')) {
-		// @todo wtf? does it ok?
-		(domNode as any)[domKey] = nextValue;
-
-		return;
-	}
-	if (nextValue === null || nextValue === false) {
-		domNode.removeAttribute(domKey);
-
-		return;
-	}
-
-	domNode.setAttribute(domKey, nextValue as any);
-};
-
-// @todo can we reaaly make it any? or cast to keyof VNodeProps
-export const patchProps = (domNode: HTMLElement, oldProps: VNodeProps, nextProps: VNodeProps) => {
-	const allProps: VNodeProps = { ...oldProps, ...nextProps };
-
-	(Object.keys(allProps) as (keyof VNodeProps)[]).forEach((key) => {
-		if (oldProps[key] !== nextProps[key]) {
-			patchProp(domNode, key, nextProps[key]);
+		if (old) {
+			domNode.removeEventListener(eventName, old as any);
 		}
-	});
 
-	configureSyntheticProps(domNode, nextProps);
-};
+		if (next) {
+			domNode.addEventListener(eventName, next as any);
+		}
+	};
 
-const patchChildren = (domNode: HTMLElement, oldChildren: Children, nextChildren: Children) => {
-	const oldChildrenList = array(oldChildren!);
-	const nextChildrenList = array(nextChildren!);
+	export function patchProp<Key extends VNodeKey>(domNode: HTMLElement, key: Key, props: ChangedProps<Key>) {
+		const htmlKey = mapJSXPropToHTMLProp(key);
 
-	let notEmptyIndex = 0;
-	const domChildNodes = domNode.childNodes;
+		if (htmlKey.startsWith('on')) {
+			handleEventListener(domNode, htmlKey, props);
 
-	for (let i = 0; i < oldChildrenList.length; i++) {
-		const child = domChildNodes[notEmptyIndex];
+			return;
+		}
 
-		if (!shouldRenderVNode(oldChildrenList[i])) {
-			const nextChildDomNode = createNode(nextChildrenList[i]);
+		if (isNull(props.next)) {
+			domNode.removeAttribute(htmlKey);
 
-			if (nextChildDomNode) {
-				domNode.insertBefore(nextChildDomNode, child);
-				notEmptyIndex++;
+			return;
+		}
+
+		domNode.setAttribute(htmlKey, props.next as any);
+	}
+
+	export function patchProps(domNode: HTMLElement, oldProps: VNodeProps, nextProps: VNodeProps) {
+		const allProps: VNodeProps = { ...oldProps, ...nextProps };
+		const allKeys = Object.keys(allProps) as VNodeKey[];
+
+		allKeys.forEach((key) => {
+			patchProp(domNode, key, { old: oldProps[key], next: nextProps[key] });
+		});
+
+		applySyntheticProps(domNode, nextProps);
+	}
+
+	type PatchListOptions = {
+		rootNode: HTMLElement;
+		oldVNode: VNode | VNode[];
+		nextVNode: VNode | VNode[];
+		startIndex: number;
+		firstListNode: HTMLElement | undefined;
+	};
+
+	/**
+	 * @returns {number} number of created nodes
+	 */
+	export function patchLists({ rootNode, oldVNode, nextVNode, startIndex, firstListNode }: PatchListOptions): number {
+		const childNodes = new Array(...rootNode.childNodes);
+
+		if (Node.isVNodeList(oldVNode) && Node.isVNodeList(nextVNode)) {
+			if (!Node.areKeysDifferent(oldVNode) || !Node.areKeysDifferent(nextVNode)) {
+				// eslint-disable-next-line no-console
+				console.warn('VDOM warning: Keys are not different, VDOM will not work effectively');
+				// eslint-disable-next-line @typescript-eslint/no-use-before-define
+				patchChildren({
+					domNode: rootNode,
+					oldChildren: oldVNode,
+					nextChildren: nextVNode,
+					createBehavior: { insertAfter: childNodes[startIndex + oldVNode.length - 1] as HTMLElement },
+					startIndex
+				});
+
+				return nextVNode.length;
 			}
 
-			continue;
+			const oldKeys = Node.keys(oldVNode);
+			const nextKeys = Node.keys(nextVNode);
+
+			const { added, removed } = diff(oldKeys, nextKeys);
+
+			removed.forEach((index, removedCount) => {
+				childNodes[startIndex + index - removedCount].remove();
+			});
+
+			added.forEach((index) => {
+				DOM.render({
+					target: rootNode,
+					mode: 'before',
+					before: childNodes[startIndex + index] as HTMLElement,
+					node: Node.createNode(nextVNode[index])
+				});
+			});
+
+			return nextVNode.length;
 		}
 
-		if (shouldRenderVNode(nextChildrenList[i])) {
-			notEmptyIndex++;
+		if (Node.isVNode(oldVNode) && Node.isVNodeList(nextVNode)) {
+			const created = DOM.render({
+				target: rootNode,
+				mode: 'before',
+				before: firstListNode,
+				node: Node.createNodeList(nextVNode)
+			});
+
+			firstListNode?.remove();
+
+			return created;
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		patchNode(child as HTMLElement, oldChildrenList[i], nextChildrenList[i]);
+		if (Node.isVNodeList(oldVNode) && Node.isVNode(nextVNode)) {
+			DOM.render({
+				target: rootNode,
+				mode: 'before',
+				before: firstListNode,
+				node: Node.createNode(nextVNode)
+			});
+			DOM.unmount(...(childNodes.slice(startIndex, startIndex + oldVNode.length) as HTMLElement[]));
+
+			return 1;
+		}
+
+		assertNever();
+
+		return 0;
 	}
 
-	nextChildrenList.slice(oldChildrenList.length).forEach((vChild) => {
-		const domChild = createNode(vChild);
+	type PatchChildrenOptions = {
+		domNode: HTMLElement;
+		oldChildren: Children;
+		nextChildren: Children;
+		createBehavior?:
+			| 'append'
+			| {
+					insertAfter: HTMLElement;
+			  };
+		startIndex?: number;
+	};
+	export function patchChildren({
+		domNode,
+		oldChildren,
+		nextChildren,
+		createBehavior = 'append',
+		startIndex = 0
+	}: PatchChildrenOptions) {
+		const childNodes = domNode.childNodes;
+		const oldChildrenList = array(oldChildren);
+		const nextChildrenList = array(nextChildren);
+		let currentChildIndex = startIndex;
 
-		if (domChild) {
-			domNode.appendChild(domChild);
+		for (let i = 0; i < oldChildrenList.length; i++) {
+			const child = childNodes[currentChildIndex];
+			const oldChildVNode = oldChildrenList[i];
+			const nextChildVNode = nextChildrenList[i];
+
+			if (!Node.shouldRenderVNode(oldChildVNode)) {
+				if (Node.shouldRenderVNode(nextChildVNode)) {
+					const childDomNode = Node.createNodeList(nextChildVNode);
+
+					DOM.render({
+						target: domNode,
+						mode: 'before',
+						node: childDomNode,
+						before: child as HTMLElement
+					});
+
+					currentChildIndex++;
+				}
+				continue;
+			}
+
+			if (Node.isVNodeList(oldChildVNode) || Node.isVNodeList(nextChildVNode)) {
+				currentChildIndex += patchLists({
+					rootNode: domNode,
+					oldVNode: oldChildVNode,
+					nextVNode: nextChildVNode,
+					startIndex: currentChildIndex,
+					firstListNode: child as HTMLElement
+				});
+
+				continue;
+			}
+
+			if (Node.shouldRenderVNode(nextChildVNode)) {
+				currentChildIndex++;
+			}
+
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			patchNode(child as HTMLElement, oldChildVNode, nextChildVNode);
 		}
-	});
-};
 
-const patchNode = (domNode: HTMLElement, oldVNode: VNode, nextVNode: VNode): Node | null => {
-	if (!shouldRenderVNode(nextVNode)) {
-		domNode.remove();
+		nextChildrenList.slice(oldChildrenList.length).forEach((node) => {
+			if (typeof createBehavior === 'string') {
+				DOM.render({
+					target: domNode,
+					mode: createBehavior,
+					node: Node.createNodeList(node)
+				});
 
-		return null;
+				return;
+			}
+
+			DOM.render({
+				target: createBehavior.insertAfter,
+				mode: 'after',
+				node: Node.createNodeList(node)
+			});
+		});
 	}
 
-	if (isPrimitiveVNode(oldVNode) || isPrimitiveVNode(nextVNode)) {
-		if (oldVNode !== nextVNode) {
-			const nextDomNode = createNode(nextVNode);
+	export function patchNode(domNode: HTMLElement, oldVNode: VNode, nextVNode: VNode): Node | null {
+		if (!Node.shouldRenderVNode(nextVNode)) {
+			domNode.remove();
 
-			domNode.replaceWith(nextDomNode!);
-
-			return nextDomNode;
+			return null;
 		}
+
+		if (isNull(oldVNode)) {
+			throw new Error('Virtual DOM: something went wrong.');
+		}
+
+		if (Node.isPrimitiveVNode(oldVNode) || Node.isPrimitiveVNode(nextVNode)) {
+			if (oldVNode === nextVNode) {
+				return domNode;
+			}
+			const newDomNode = Node.createNode(nextVNode);
+
+			DOM.render({
+				target: domNode,
+				mode: 'replace',
+				node: newDomNode
+			});
+
+			return newDomNode;
+		}
+
+		if (oldVNode.tagName !== nextVNode!.tagName) {
+			const newDomNode = Node.createNode(nextVNode);
+
+			DOM.render({
+				target: domNode,
+				mode: 'replace',
+				node: newDomNode
+			});
+
+			return newDomNode;
+		}
+
+		patchProps(domNode, oldVNode.props, nextVNode!.props);
+		patchChildren({
+			domNode,
+			oldChildren: oldVNode.children,
+			nextChildren: nextVNode!.children
+		});
 
 		return domNode;
 	}
-
-	if (oldVNode!.tagName !== nextVNode!.tagName) {
-		const nextDomNode = createNode(nextVNode);
-
-		domNode.replaceWith(nextDomNode!);
-
-		return nextDomNode;
-	}
-
-	patchProps(domNode, oldVNode!.props, nextVNode!.props);
-	patchChildren(domNode, oldVNode!.children, nextVNode!.children);
-
-	return domNode;
-};
-
-export { patchNode };
+}

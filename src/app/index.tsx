@@ -1,8 +1,8 @@
 import PHTML from '@v8tenko/phtml';
 import './reset.css';
 
-import { Counter } from './src/components/Todo';
+import { DynamicList } from './src/components/DynamicList';
 
 const root = document.getElementById('root');
 
-PHTML.DOM.render(root!, Counter);
+PHTML.DOM.render(root!, DynamicList);
