@@ -1,4 +1,4 @@
-# React implementation
+# React implementationCancel changes
 
 ## Setup
 
@@ -12,7 +12,7 @@
 
 -   [x] Virtual DOM
 -   [] Fragments
--   [] List keys
+-   [х] List keys
 -   [] Ref forwarding
 -   Context
     -   [] Provider / Consumer
