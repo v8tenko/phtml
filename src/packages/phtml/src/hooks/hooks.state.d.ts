@@ -9,5 +9,13 @@ export type UseMemo<T> = {
 	dependencies: any[];
 };
 
-export type HookState<T> = UseState<T> | UseMemo<T>;
+export type UseEffect = {
+	type: 'effect';
+	// @todo patch unmount event
+	callback(): void;
+	dependencies: any[];
+	invoked: boolean;
+};
+
+export type HookState<T> = UseState<T> | UseMemo<T> | UseEffect;
 export type IndexedHookState<T> = T & { id: number };

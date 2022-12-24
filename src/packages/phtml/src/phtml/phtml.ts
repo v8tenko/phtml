@@ -10,6 +10,8 @@ type PatchHookStateOptions = {
 	update?: boolean;
 };
 
+type RenderState = 'initial' | 'rendering' | 'applying_effects' | 'waiting';
+
 namespace PHTML {
 	let app: Component | undefined;
 	let oldVNodeRoot: VNode | undefined;
@@ -17,21 +19,40 @@ namespace PHTML {
 	let currentHookIndex = 0;
 	const hooksState: Record<number, IndexedHookState<any>> = {};
 
+	export let renderState: RenderState = 'initial';
+
+	namespace Effects {
+		export function applyEffects() {
+			if (!app) {
+				return;
+			}
+			currentHookIndex = 0;
+			renderState = 'applying_effects';
+			app();
+			renderState = 'waiting';
+		}
+	}
 	export namespace DOM {
 		export function render(target: HTMLElement, component: Component<{}>) {
-			currentHookIndex = 0;
+			renderState = 'rendering';
 			app = component;
+			currentHookIndex = 0;
+
 			const nextVNodeRoot = app();
 
 			if (!oldVNodeRoot) {
 				oldDomRoot = mount(target, nextVNodeRoot);
+				Effects.applyEffects();
 				oldVNodeRoot = nextVNodeRoot;
+				renderState = 'waiting';
 
 				return;
 			}
 
 			oldDomRoot = VDOM.patchNode(oldDomRoot!, oldVNodeRoot, nextVNodeRoot) as HTMLElement | undefined;
+			Effects.applyEffects();
 			oldVNodeRoot = nextVNodeRoot;
+			renderState = 'waiting';
 		}
 
 		export function update() {

@@ -67,10 +67,6 @@ export namespace Node {
 		}
 		const { children } = props || {};
 
-		if (props?.children !== null && props?.children !== undefined) {
-			delete props.children;
-		}
-
 		return {
 			tagName,
 			props: props || {},
