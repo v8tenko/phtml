@@ -1,7 +1,7 @@
-import { array } from '@v8tenko/utils';
+import { array, unique } from '@v8tenko/utils';
 
 import { VDOM } from '../render/patch';
-import { PrimitiveVNode, VNode, VNodeProps, Key } from '../typings/node';
+import { PrimitiveVNode, VNode, VNodeProps, Key, VNodeList } from '../typings/node';
 import './setup';
 
 export namespace Node {
@@ -10,8 +10,8 @@ export namespace Node {
 	export const isPrimitiveVNode = (vNode: VNode): vNode is PrimitiveVNode =>
 		vNode !== null && typeof vNode !== 'object';
 
-	export const isVNodeList = (vNode: VNode | VNode[]): vNode is VNode[] => Array.isArray(vNode);
-	export const isVNode = (vNode: VNode | VNode[]): vNode is VNode => !isVNodeList(vNode);
+	export const isVNodeList = (vNode: VNode | VNodeList): vNode is VNodeList => Array.isArray(vNode);
+	export const isVNode = (vNode: VNode | VNodeList): vNode is VNode => !isVNodeList(vNode);
 	export const hasChildren = (vNode: VNode): boolean => {
 		if (vNode === null) {
 			return false;
@@ -27,7 +27,8 @@ export namespace Node {
 
 		return Boolean(vNode?.children);
 	};
-	export const shouldRenderVNode = (vNode: VNode | VNode[]): boolean => {
+
+	export const shouldRenderVNode = (vNode: VNode | VNodeList): boolean => {
 		const isVNodeList = Array.isArray(vNode);
 
 		if (isVNodeList) {
@@ -37,18 +38,44 @@ export namespace Node {
 		return !NOT_RENDER_VALUES.includes(vNode as any);
 	};
 
-	export const keys = (vNodeList: VNode[]): (Key | undefined)[] => {
-		return vNodeList.map((childVNode) => {
-			if (isPrimitiveVNode(childVNode)) {
-				return undefined;
-			}
+	export const key = (vNode: VNode): Key | undefined => {
+		if (isPrimitiveVNode(vNode)) {
+			return undefined;
+		}
 
-			return childVNode?.props.key;
-		});
+		return vNode?.props.key;
 	};
 
-	export const areKeysDifferent = (vNodeList: VNode[]): boolean => {
-		return [...new Set(keys(vNodeList))].length === vNodeList.length;
+	export const keys = (vNodeList: VNodeList): (Key | undefined)[] => {
+		return vNodeList.map(key);
+	};
+
+	export const validateKey = (key: Key | undefined): boolean => {
+		if (key === undefined) {
+			return false;
+		}
+
+		return true;
+	};
+
+	export const areKeysDifferent = (vNodeList: VNodeList): boolean => {
+		const renderedVNodes = vNodeList.filter(shouldRenderVNode);
+
+		return unique(keys(renderedVNodes).filter(validateKey)).length === renderedVNodes.length;
+	};
+
+	export const mapKeysToVNodes = (vNodeList: VNodeList): Record<Key, VNode> => {
+		const vNodeByKeyMap: Record<Key, VNode> = {};
+
+		vNodeList.forEach((vNode) => {
+			if (!vNode || isPrimitiveVNode(vNode) || !vNode.props.key) {
+				return;
+			}
+
+			vNodeByKeyMap[vNode?.props.key] = vNode;
+		});
+
+		return vNodeByKeyMap;
 	};
 
 	type CreateVNode = (props: any) => VNode;
@@ -65,16 +92,15 @@ export namespace Node {
 
 			return vNode;
 		}
-		const { children } = props || {};
 
-		if (props?.children !== null && props?.children !== undefined) {
-			delete props.children;
-		}
+		const propsWithKey = props || {};
+
+		Object.assign(propsWithKey || {}, { key });
 
 		return {
 			tagName,
-			props: props || {},
-			children: children !== undefined ? children : null
+			props: propsWithKey,
+			children: props?.children
 		};
 	};
 
@@ -134,7 +160,7 @@ export namespace Node {
 		return domNodeRoot!;
 	};
 
-	export const createNodeList = (vNodeList: VNode | VNode[]): (Node | null)[] => {
+	export const createNodeList = (vNodeList: VNode | VNodeList): (Node | null)[] => {
 		return array(vNodeList).map(createNode);
 	};
 }

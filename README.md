@@ -22,5 +22,5 @@
     -   [x] useState
     -   [x] useMemo
     -   [] useReducer
-    -   [] useEffect
+    -   [] useEffect - unstable, cleanup function not implemented yet
     -   [] useRef

@@ -1,5 +1,6 @@
 import PHTML from './src/phtml/phtml';
+import './src/typings/setup';
 
-export { useState, useMemo } from './src/hooks';
+export * from './src/hooks';
 
 export default PHTML;

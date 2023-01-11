@@ -2,6 +2,7 @@ import { assert } from '@v8tenko/utils';
 import { mount, VNode, VDOM } from '@v8tenko/vdom';
 
 import { HookState, IndexedHookState } from '../hooks/hooks.state';
+import { Effect } from '../typings/phtml';
 
 type PatchHookStateOptions = {
 	/**
@@ -16,22 +17,40 @@ namespace PHTML {
 	let oldDomRoot: HTMLElement | undefined;
 	let currentHookIndex = 0;
 	const hooksState: Record<number, IndexedHookState<any>> = {};
+	const effects: Effect[] = [];
+
+	export function registerEffect(effect: Effect) {
+		effects.push(effect);
+	}
+
+	const runEffects = () => {
+		effects.forEach((effect) => {
+			effect();
+		});
+	};
 
 	export namespace DOM {
-		export function render(target: HTMLElement, component: Component<{}>) {
+		const cleanup = () => {
 			currentHookIndex = 0;
+			effects.length = 0;
+		};
+
+		export function render(target: HTMLElement, component: Component<{}>) {
+			cleanup();
 			app = component;
 			const nextVNodeRoot = app();
 
 			if (!oldVNodeRoot) {
 				oldDomRoot = mount(target, nextVNodeRoot);
 				oldVNodeRoot = nextVNodeRoot;
+				runEffects();
 
 				return;
 			}
 
 			oldDomRoot = VDOM.patchNode(oldDomRoot!, oldVNodeRoot, nextVNodeRoot) as HTMLElement | undefined;
 			oldVNodeRoot = nextVNodeRoot;
+			runEffects();
 		}
 
 		export function update() {
@@ -64,9 +83,9 @@ namespace PHTML {
 		return currentHookState;
 	}
 
-	export const getHookStateById = <T, State extends HookState<T>>(id: number): IndexedHookState<State> => {
+	export function getHookStateById<T, State extends HookState<T>>(id: number): IndexedHookState<State> {
 		return hooksState[id];
-	};
+	}
 
 	export function patchHookState<T>(
 		id: number,

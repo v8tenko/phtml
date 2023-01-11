@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "pnpm -F @v8tenko/app build",
-		"dev": "pnpm run --parallel --stream dev",
+		"dev": "pnpm -F @v8tenko/app dev",
 		"prepare": "husky install"
 	},
 	"devDependencies": {

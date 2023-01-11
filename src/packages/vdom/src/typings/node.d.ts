@@ -1,9 +1,9 @@
-export type Children = VNode | (VNode | VNode[])[] | null;
+export type Children = VNode | (VNode | VNodeList)[] | null;
 export type Key = string | number;
 
 export type PrimitiveVNode = string | number | boolean;
 
-type SyntheticProps = {
+export type SyntheticProps = {
 	className?: string;
 	value: string | boolean;
 	key: Key;
@@ -12,6 +12,8 @@ type SyntheticProps = {
 
 export type VNodeProps = Partial<HTMLElement & SyntheticProps>;
 export type VNodeKey = keyof VNodeProps;
+
+export type VNodeList = VNode[];
 
 export type VNode =
 	| {

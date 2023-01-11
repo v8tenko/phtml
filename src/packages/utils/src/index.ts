@@ -6,3 +6,5 @@ export * from './diff';
 export * from './indexed';
 export * from './invoke';
 export * from './isNull';
+export * from './from';
+export * from './unique';

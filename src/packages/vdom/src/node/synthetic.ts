@@ -18,10 +18,12 @@ export const applySyntheticProps = (domNode: HTMLElement, props: Partial<VNodePr
 };
 
 const JSX_PROPS: Record<string, any> = {
-	className: 'class'
+	className: 'class',
+	key: undefined,
+	children: undefined
 };
 
-export const mapJSXPropToHTMLProp = (key: VNodeKey): VNodeKey => {
+export const mapJSXPropToHTMLProp = (key: VNodeKey): VNodeKey | undefined => {
 	if (Object.hasOwn(JSX_PROPS, key)) {
 		return JSX_PROPS[key];
 	}

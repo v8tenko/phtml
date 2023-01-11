@@ -2,7 +2,7 @@ import { array, assertNever, diff, isNull } from '@v8tenko/utils';
 
 import { Node } from '../node/node';
 import { applySyntheticProps, mapJSXPropToHTMLProp } from '../node/synthetic';
-import { Children, VNode, VNodeProps, VNodeKey } from '../typings/node';
+import { Children, VNode, VNodeProps, VNodeKey, VNodeList } from '../typings/node';
 
 import { DOM } from './patch.dom';
 
@@ -30,6 +30,10 @@ export namespace VDOM {
 
 	export function patchProp<Key extends VNodeKey>(domNode: HTMLElement, key: Key, props: ChangedProps<Key>) {
 		const htmlKey = mapJSXPropToHTMLProp(key);
+
+		if (!htmlKey) {
+			return;
+		}
 
 		if (htmlKey.startsWith('on')) {
 			handleEventListener(domNode, htmlKey, props);
@@ -59,8 +63,8 @@ export namespace VDOM {
 
 	type PatchListOptions = {
 		rootNode: HTMLElement;
-		oldVNode: VNode | VNode[];
-		nextVNode: VNode | VNode[];
+		oldVNode: VNode | VNodeList;
+		nextVNode: VNode | VNodeList;
 		startIndex: number;
 		firstListNode: HTMLElement | undefined;
 	};
@@ -69,10 +73,12 @@ export namespace VDOM {
 	 * @returns {number} number of created nodes
 	 */
 	export function patchLists({ rootNode, oldVNode, nextVNode, startIndex, firstListNode }: PatchListOptions): number {
-		const childNodes = new Array(...rootNode.childNodes);
+		const childNodes = rootNode.childNodes;
 
 		if (Node.isVNodeList(oldVNode) && Node.isVNodeList(nextVNode)) {
 			if (!Node.areKeysDifferent(oldVNode) || !Node.areKeysDifferent(nextVNode)) {
+				const childNodesCount = oldVNode.filter(Node.shouldRenderVNode).length;
+
 				// eslint-disable-next-line no-console
 				console.warn('VDOM warning: Keys are not different, VDOM will not work effectively');
 				// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -80,28 +86,58 @@ export namespace VDOM {
 					domNode: rootNode,
 					oldChildren: oldVNode,
 					nextChildren: nextVNode,
-					createBehavior: { insertAfter: childNodes[startIndex + oldVNode.length - 1] as HTMLElement },
+					createBehavior: { insertAfter: childNodes[startIndex + childNodesCount - 1] as HTMLElement },
 					startIndex
 				});
 
 				return nextVNode.length;
 			}
 
-			const oldKeys = Node.keys(oldVNode);
-			const nextKeys = Node.keys(nextVNode);
+			const oldVNodeByKey = Node.mapKeysToVNodes(oldVNode);
+			const nextVNodeByKey = Node.mapKeysToVNodes(nextVNode);
 
-			const { added, removed } = diff(oldKeys, nextKeys);
+			let currentChildIndex = startIndex;
 
-			removed.forEach((index, removedCount) => {
-				childNodes[startIndex + index - removedCount].remove();
+			oldVNode.forEach((vNode) => {
+				if (!Node.shouldRenderVNode(vNode)) {
+					return;
+				}
+
+				const key = Node.key(vNode);
+
+				if (!key) {
+					return;
+				}
+
+				// eslint-disable-next-line @typescript-eslint/no-use-before-define
+				const patchedNode = patchNode(
+					childNodes[currentChildIndex] as HTMLElement,
+					oldVNodeByKey[key],
+					nextVNodeByKey[key]
+				);
+
+				if (patchedNode) {
+					currentChildIndex++;
+				}
 			});
 
+			const oldKeys = Node.keys(oldVNode);
+			const nextKeys = Node.keys(nextVNode);
+			const renderedKeys = nextKeys.filter(Node.validateKey);
+
+			const { added } = diff(oldKeys, nextKeys);
+
 			added.forEach((index) => {
+				const childKey = nextKeys[index]!;
+				const vNode = nextVNodeByKey[childKey];
+				// потому что нужно знать место, где этот элемент необходимо рендерить. @todo можно ли без лишней линии?
+				const childIndex = renderedKeys.indexOf(childKey);
+
 				DOM.render({
 					target: rootNode,
 					mode: 'before',
-					before: childNodes[startIndex + index] as HTMLElement,
-					node: Node.createNode(nextVNode[index])
+					before: startIndex + childIndex,
+					node: Node.createNode(vNode)
 				});
 			});
 
@@ -128,7 +164,8 @@ export namespace VDOM {
 				before: firstListNode,
 				node: Node.createNode(nextVNode)
 			});
-			DOM.unmount(...(childNodes.slice(startIndex, startIndex + oldVNode.length) as HTMLElement[]));
+			// cringe
+			DOM.unmount(...(new Array(...childNodes).slice(startIndex, startIndex + oldVNode.length) as HTMLElement[]));
 
 			return 1;
 		}
