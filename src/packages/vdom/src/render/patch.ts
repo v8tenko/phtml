@@ -2,10 +2,11 @@ import { array, assertNever, diff, isNull } from '@v8tenko/utils';
 
 import { Node } from '../node/node';
 import { applySyntheticProps, mapJSXPropToHTMLProp } from '../node/synthetic';
-import { Children, VNode, VNodeProps, VNodeKey, VNodeList } from '../typings/node';
+import { Children, VNodeProps, VNodeKey, VNodeElement } from '../typings/node';
 
 import { DOM } from './patch.dom';
 
+// хуй знает как оно живет, отрефачить бы
 export namespace VDOM {
 	type ChangedProps<Key extends VNodeKey> = {
 		old?: VNodeProps[Key];
@@ -63,8 +64,8 @@ export namespace VDOM {
 
 	type PatchListOptions = {
 		rootNode: HTMLElement;
-		oldVNode: VNode | VNodeList;
-		nextVNode: VNode | VNodeList;
+		oldVNode: VNodeElement;
+		nextVNode: VNodeElement;
 		startIndex: number;
 		firstListNode: HTMLElement | undefined;
 	};
@@ -79,8 +80,6 @@ export namespace VDOM {
 			if (!Node.areKeysDifferent(oldVNode) || !Node.areKeysDifferent(nextVNode)) {
 				const childNodesCount = oldVNode.filter(Node.shouldRenderVNode).length;
 
-				// eslint-disable-next-line no-console
-				console.warn('VDOM warning: Keys are not different, VDOM will not work effectively');
 				// eslint-disable-next-line @typescript-eslint/no-use-before-define
 				patchChildren({
 					domNode: rootNode,
@@ -90,7 +89,7 @@ export namespace VDOM {
 					startIndex
 				});
 
-				return nextVNode.length;
+				return nextVNode.filter(Node.shouldRenderVNode).length;
 			}
 
 			const oldVNodeByKey = Node.mapKeysToVNodes(oldVNode);
@@ -141,7 +140,7 @@ export namespace VDOM {
 				});
 			});
 
-			return nextVNode.length;
+			return nextVNode.filter(Node.shouldRenderVNode).length;
 		}
 
 		if (Node.isVNode(oldVNode) && Node.isVNodeList(nextVNode)) {
@@ -240,7 +239,7 @@ export namespace VDOM {
 		}
 
 		nextChildrenList.slice(oldChildrenList.length).forEach((node) => {
-			if (typeof createBehavior === 'string') {
+			if (createBehavior === 'append') {
 				DOM.render({
 					target: domNode,
 					mode: createBehavior,
@@ -258,7 +257,7 @@ export namespace VDOM {
 		});
 	}
 
-	export function patchNode(domNode: HTMLElement, oldVNode: VNode, nextVNode: VNode): Node | null {
+	export function patchNode(domNode: HTMLElement, oldVNode: VNodeElement, nextVNode: VNodeElement): Node | null {
 		if (!Node.shouldRenderVNode(nextVNode)) {
 			domNode.remove();
 
@@ -267,6 +266,10 @@ export namespace VDOM {
 
 		if (isNull(oldVNode)) {
 			throw new Error('Virtual DOM: something went wrong.');
+		}
+
+		if (Node.isVNodeList(oldVNode) || Node.isVNodeList(nextVNode)) {
+			throw new Error('Virtual DOM: something went wrong. patchNode not accepts VNodeLists');
 		}
 
 		if (Node.isPrimitiveVNode(oldVNode) || Node.isPrimitiveVNode(nextVNode)) {

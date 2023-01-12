@@ -20,18 +20,37 @@ export const DynamicList: PHTML.Component = () => {
 	};
 
 	return (
-		<div className="list" id="sample">
-			<button id="inc" onClick={add}>
-				increase
-			</button>
+		<>
+			<button onClick={add}>increase</button>
 			<p>count: {count}</p>
 			{arr.map((el, i) => {
-				if (i % 2 == 1) {
+				if (i % 2 == count % 2) {
 					return undefined;
 				}
 
-				return <Item key={el} onClick={() => patch(i)} text={el} />;
+				return (
+					<Item key={el} onClick={() => patch(i)}>
+						{el}
+					</Item>
+				);
 			})}
-		</div>
+			<>
+				<div>hello!!!</div>
+			</>
+			<p>hello x2!!!</p>
+			<>
+				{arr.map((el, i) => {
+					if (i % 2 !== count % 2) {
+						return undefined;
+					}
+
+					return (
+						<Item key={el} onClick={() => patch(i)}>
+							{el}
+						</Item>
+					);
+				})}
+			</>
+		</>
 	);
 };

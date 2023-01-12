@@ -1,13 +1,14 @@
-import type { VNode } from '@v8tenko/vdom';
+import type * as PHTMLTypgins from './phtml';
 
 declare global {
 	declare namespace PHTML {
-		export type Component<Props extends VNodeProps = {}> = (...args: Props) => VNode;
+		export = PHTMLTypgins;
 	}
 
 	declare namespace JSX {
 		interface IntrinsicElements {
 			[componentName: string]: any;
+			Fragment: {};
 			input: {
 				value?: string;
 				placeholder?: string;

@@ -1,23 +1,38 @@
-import { array, unique } from '@v8tenko/utils';
+import { array, NotNull, Nullable, unique } from '@v8tenko/utils';
 
 import { VDOM } from '../render/patch';
-import { PrimitiveVNode, VNode, VNodeProps, Key, VNodeList } from '../typings/node';
+import {
+	PrimitiveVNode,
+	VNode,
+	VNodeProps,
+	Key,
+	VNodeList,
+	VNodeElement,
+	VNodeWithChildren,
+	Children
+} from '../typings/node';
+
 import './setup';
 
 export namespace Node {
 	const NOT_RENDER_VALUES = [null, undefined, false, ''] as const;
 
-	export const isPrimitiveVNode = (vNode: VNode): vNode is PrimitiveVNode =>
+	export const Fragment = Symbol('vdom/fragment');
+
+	export const isPrimitiveVNode = (vNode: VNodeElement): vNode is PrimitiveVNode =>
 		vNode !== null && typeof vNode !== 'object';
 
-	export const isVNodeList = (vNode: VNode | VNodeList): vNode is VNodeList => Array.isArray(vNode);
-	export const isVNode = (vNode: VNode | VNodeList): vNode is VNode => !isVNodeList(vNode);
-	export const hasChildren = (vNode: VNode): boolean => {
+	export const isVNodeList = (vNode: VNodeElement): vNode is VNodeList => Array.isArray(vNode);
+
+	export const isVNode = (vNode: VNodeElement): vNode is VNode =>
+		vNode !== null && typeof vNode === 'object' && !Array.isArray(vNode) && typeof vNode.tagName === 'string';
+
+	export const hasChildren = (vNode: VNodeElement): vNode is VNodeWithChildren => {
 		if (vNode === null) {
 			return false;
 		}
 
-		if (isPrimitiveVNode(vNode)) {
+		if (!isVNode(vNode)) {
 			return false;
 		}
 
@@ -28,18 +43,26 @@ export namespace Node {
 		return Boolean(vNode?.children);
 	};
 
-	export const shouldRenderVNode = (vNode: VNode | VNodeList): boolean => {
-		const isVNodeList = Array.isArray(vNode);
-
-		if (isVNodeList) {
+	export const shouldRenderVNode = (vNode: VNodeElement): vNode is NotNull<VNodeElement> => {
+		if (isVNodeList(vNode)) {
 			return true;
 		}
 
 		return !NOT_RENDER_VALUES.includes(vNode as any);
 	};
 
-	export const key = (vNode: VNode): Key | undefined => {
-		if (isPrimitiveVNode(vNode)) {
+	export const children = (vNode: VNodeWithChildren): Children => {
+		const childList = array(vNode.children).filter(shouldRenderVNode);
+
+		if (childList.length === 1) {
+			return childList[0];
+		}
+
+		return childList as Children;
+	};
+
+	export const key = (vNode: VNodeElement): Key | undefined => {
+		if (!isVNode(vNode)) {
 			return undefined;
 		}
 
@@ -68,7 +91,7 @@ export namespace Node {
 		const vNodeByKeyMap: Record<Key, VNode> = {};
 
 		vNodeList.forEach((vNode) => {
-			if (!vNode || isPrimitiveVNode(vNode) || !vNode.props.key) {
+			if (!isVNode(vNode) || !vNode.props.key) {
 				return;
 			}
 
@@ -78,53 +101,70 @@ export namespace Node {
 		return vNodeByKeyMap;
 	};
 
-	type CreateVNode = (props: any) => VNode;
+	type CreateVNode = (props: any) => VNodeElement;
 
 	export const createVNode = (
-		tagName: string | CreateVNode,
-		props: VNodeProps | null = null,
+		tagName: string | CreateVNode | Symbol,
+		props: Nullable<VNodeProps>,
 		key: Key | null = null
-	) => {
-		if (typeof tagName !== 'string') {
+	): VNodeElement => {
+		const notNullProps = props || {};
+
+		if (typeof tagName === 'symbol') {
+			return props?.children;
+		}
+
+		if (typeof tagName === 'function') {
 			const vNode = tagName(props);
 
-			Object.assign((vNode as any).props, { key });
+			if (isVNode(vNode)) {
+				Object.assign(vNode.props, { key });
+			}
 
 			return vNode;
 		}
 
-		const propsWithKey = props || {};
-
-		Object.assign(propsWithKey || {}, { key });
+		Object.assign(notNullProps, { key });
 
 		return {
 			tagName,
-			props: propsWithKey,
+			props: notNullProps,
 			children: props?.children
-		};
+		} as VNode;
 	};
 
-	const makeNodeFromVNode = (vNode: VNode): Node | null => {
+	const makeNodeFromVNode = (vNode: VNodeElement): Node | null => {
 		if (!shouldRenderVNode(vNode)) {
 			return null;
 		}
+
 		if (isPrimitiveVNode(vNode)) {
 			return document.createTextNode(vNode.toString());
 		}
 
-		const domNode = document.createElement(vNode!.tagName);
+		if (isVNodeList(vNode)) {
+			return document.createDocumentFragment();
+		}
+
+		const domNode = document.createElement(vNode.tagName);
 
 		VDOM.patchProps(domNode, {}, vNode!.props);
 
 		return domNode;
 	};
 
-	export const createNode = (vNode: VNode): Node | null => {
-		const stack = [{ root: null as Node | null, node: vNode }];
-		let domNodeRoot: Node | undefined;
+	export const createNode = (vNode: VNodeElement): Nullable<Node> => {
+		const root = document.createDocumentFragment() as Nullable<Node>;
+		const stack = [{ root, node: vNode }];
 
 		while (stack.length) {
 			const { node: element, root } = stack.pop()!;
+
+			if (isVNodeList(element)) {
+				stack.push(...element.map((el) => ({ root, node: el })).reverse());
+
+				continue;
+			}
 
 			const domNode = makeNodeFromVNode(element);
 
@@ -132,13 +172,9 @@ export namespace Node {
 				continue;
 			}
 
-			if (!root) {
-				domNodeRoot = domNode;
-			}
-
 			root?.appendChild(domNode);
 
-			if (isPrimitiveVNode(element) || !hasChildren(element)) {
+			if (!hasChildren(element)) {
 				continue;
 			}
 
@@ -157,10 +193,17 @@ export namespace Node {
 			}
 		}
 
-		return domNodeRoot!;
+		return root!;
 	};
 
-	export const createNodeList = (vNodeList: VNode | VNodeList): (Node | null)[] => {
-		return array(vNodeList).map(createNode);
+	export const createNodeList = (vNodeList: VNodeElement): Node => {
+		const childNodes = array(vNodeList)
+			.filter(shouldRenderVNode)
+			.map((vNode) => createNode(vNode));
+		const fragment = document.createDocumentFragment();
+
+		childNodes.forEach((child) => child && fragment.appendChild(child));
+
+		return fragment;
 	};
 }

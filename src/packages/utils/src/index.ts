@@ -8,3 +8,4 @@ export * from './invoke';
 export * from './isNull';
 export * from './from';
 export * from './unique';
+export * from './types';

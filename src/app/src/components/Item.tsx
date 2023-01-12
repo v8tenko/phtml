@@ -1,12 +1,7 @@
 type Props = {
-	text: string;
 	onClick: Function;
 };
 
-export const Item: Component<Props> = ({ text, onClick }) => {
-	return (
-		<p onClick={onClick} id={text}>
-			{text}
-		</p>
-	);
+export const Item: PHTML.Component<Props> = ({ children, onClick }) => {
+	return <p onClick={onClick}>{children}</p>;
 };

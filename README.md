@@ -11,7 +11,7 @@
 ## DoD
 
 -   [x] Virtual DOM
--   [] Fragments
+-   [x] Fragments - unstable
 -   [x] List keys
 -   [] Ref forwarding
 -   Context

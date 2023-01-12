@@ -1,8 +1,8 @@
 import { assert } from '@v8tenko/utils';
-import { mount, VNode, VDOM } from '@v8tenko/vdom';
+import { mount, VNode, VDOM, isList } from '@v8tenko/vdom';
 
 import { HookState, IndexedHookState } from '../hooks/hooks.state';
-import { Effect } from '../typings/phtml';
+import { Component, Effect } from '../typings/phtml';
 
 type PatchHookStateOptions = {
 	/**
@@ -38,7 +38,7 @@ namespace PHTML {
 		export function render(target: HTMLElement, component: Component<{}>) {
 			cleanup();
 			app = component;
-			const nextVNodeRoot = app();
+			const nextVNodeRoot = app({});
 
 			if (!oldVNodeRoot) {
 				oldDomRoot = mount(target, nextVNodeRoot);
@@ -48,7 +48,13 @@ namespace PHTML {
 				return;
 			}
 
-			oldDomRoot = VDOM.patchNode(oldDomRoot!, oldVNodeRoot, nextVNodeRoot) as HTMLElement | undefined;
+			if (isList(nextVNodeRoot)) {
+				VDOM.patchChildren({ domNode: oldDomRoot!, oldChildren: oldVNodeRoot, nextChildren: nextVNodeRoot });
+				oldDomRoot = target;
+			} else {
+				oldDomRoot = VDOM.patchNode(oldDomRoot!, oldVNodeRoot, nextVNodeRoot) as HTMLElement | undefined;
+			}
+
 			oldVNodeRoot = nextVNodeRoot;
 			runEffects();
 		}

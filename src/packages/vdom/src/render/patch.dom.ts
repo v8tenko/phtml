@@ -1,23 +1,25 @@
-import { array, assertNever } from '@v8tenko/utils';
+import { assertNever, Nullable } from '@v8tenko/utils';
+
+import { isDocumentFragment } from '../node/node.dom';
 
 export namespace DOM {
 	type Options =
 		| {
 				target: HTMLElement | undefined;
 				mode: 'after' | 'append';
-				node: (Node | null) | (Node | null)[];
+				node: Nullable<Node>;
 		  }
 		| {
 				target: HTMLElement | undefined;
 				mode: 'before';
-				node: (Node | null) | (Node | null)[];
+				node: Nullable<Node>;
 				// undefined means append
 				before: HTMLElement | number | undefined;
 		  }
 		| {
 				target: HTMLElement | undefined;
 				mode: 'replace';
-				node: Node | null;
+				node: Nullable<Node>;
 		  };
 
 	export function render(options: Options): number {
@@ -27,26 +29,22 @@ export namespace DOM {
 			return 0;
 		}
 
-		const nodes = array(node || []).filter(Boolean) as HTMLElement[];
-
 		if (!target) {
 			throw new Error('VDOM error: unable to commit operation: target is not defined');
 		}
 
-		if (mode === 'after') {
-			nodes.reverse().forEach((element) => {
-				target.after(element);
-			});
+		const childLength = isDocumentFragment(node) ? node.childNodes.length : 1;
 
-			return nodes.length;
+		if (mode === 'after') {
+			target.after(node);
+
+			return childLength;
 		}
 
 		if (mode === 'append') {
-			nodes.forEach((element) => {
-				target.after(element);
-			});
+			target.after(node);
 
-			return nodes.length;
+			return childLength;
 		}
 
 		if (mode === 'replace') {
@@ -65,11 +63,9 @@ export namespace DOM {
 				beforeNode = before;
 			}
 
-			nodes.forEach((element) => {
-				target.insertBefore(element, beforeNode as HTMLElement | null);
-			});
+			target.insertBefore(node, beforeNode as HTMLElement | null);
 
-			return nodes.length;
+			return childLength;
 		}
 
 		assertNever(`No action for mode: ${mode}`);

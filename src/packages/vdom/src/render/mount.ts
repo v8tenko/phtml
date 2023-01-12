@@ -1,14 +1,10 @@
 import { Node } from '../node/node';
-import { VNode } from '../typings/node';
+import { VNodeElement } from '../typings/node';
 
-export const mount = (target: HTMLElement, vNode: VNode): HTMLElement => {
+export const mount = (target: HTMLElement, vNode: VNodeElement): HTMLElement => {
 	const domNodeRoot = Node.createNode(vNode);
 
-	try {
-		target.replaceWith(domNodeRoot!);
-	} catch (e) {
-		throw new Error('Unable to mount: root is not defined');
-	}
+	target.appendChild(domNodeRoot!);
 
-	return domNodeRoot as HTMLElement;
+	return target;
 };
