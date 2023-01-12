@@ -1,4 +1,5 @@
 {
+	"private": true,
 	"name": "@v8tenko/app",
 	"version": "1.0.0",
 	"description": "Application built with @v8tenko/phtml",
