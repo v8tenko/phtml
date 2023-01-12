@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react';
+import { phtmlPlugin } from '@v8tenko/vite-plugin-phtml';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -21,12 +21,5 @@ export default defineConfig({
 	json: {
 		stringify: true
 	},
-	plugins: [
-		react({
-			babel: {
-				include: '**/*.tsx',
-				babelrc: true
-			}
-		})
-	]
+	plugins: [phtmlPlugin()]
 });
