@@ -1,5 +1,4 @@
 {
-	"private": true,
 	"name": "@v8tenko/vdom",
 	"version": "1.0.0",
 	"description": "Virtual DOM implementation for phtml",
