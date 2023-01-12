@@ -9,7 +9,9 @@ export const isEqual = (a: any, b: any): boolean => {
 		return a === b;
 	}
 
-	if (Object.keys(a).length !== Object.keys(b).length) return false;
+	if (Object.keys(a).length !== Object.keys(b).length) {
+		return false;
+	}
 
 	for (const key in a) {
 		if (!(key in b)) {

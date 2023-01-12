@@ -1,14 +1,31 @@
-import react from '@vitejs/plugin-react';
+import { transformSync } from '@babel/core';
 
-export const phtmlPlugin = () => {
-	return react({
-		babel: {
-			include: '**/*.tsx',
+const filterFile = (filename: string): boolean => {
+	const extension = filename.split('.').pop()!;
+
+	return ['jsx', 'tsx'].includes(extension);
+};
+
+export const phtmlPlugin = () => ({
+	name: 'phtml-plugin',
+	transform(code: string, filename: string) {
+		if (!filterFile(filename)) {
+			return null;
+		}
+
+		const result = transformSync(code, {
+			filename,
+			presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }]],
 			plugins: [
 				'@babel/plugin-syntax-jsx',
 				['@babel/plugin-transform-react-jsx', { runtime: 'automatic', importSource: '@v8tenko/vdom' }]
-			],
-			presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }]]
+			]
+		});
+
+		if (!result) {
+			return null;
 		}
-	});
-};
+
+		return result.code;
+	}
+});

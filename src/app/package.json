@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@v8tenko/phtml": "workspace:^1.0.0",
 		"@v8tenko/utils": "workspace:^1.0.0",
+		"@v8tenko/vdom": "workspace:^1.0.1",
 		"@v8tenko/vite-plugin-phtml": "workspace:^1.0.0"
 	},
 	"devDependencies": {
