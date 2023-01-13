@@ -41,7 +41,7 @@ importers:
       '@types/node': ^18.11.13
       '@v8tenko/phtml': workspace:^1.0.0
       '@v8tenko/utils': workspace:^1.0.0
-      '@v8tenko/vdom': workspace:^1.0.1
+      '@v8tenko/vdom': workspace:^1.0.2
       '@v8tenko/vite-plugin-phtml': workspace:^1.0.0
       concurrently: ^7.6.0
       nodemon: ^2.0.20
@@ -62,8 +62,8 @@ importers:
   src/packages/phtml:
     specifiers:
       '@types/node': ^18.11.13
-      '@v8tenko/utils': workspace:^1.0.1
-      '@v8tenko/vdom': workspace:^1.0.1
+      '@v8tenko/utils': workspace:^1.0.2
+      '@v8tenko/vdom': workspace:^1.0.2
       concurrently: ^7.6.0
       nodemon: ^2.0.20
       typescript: ^4.9.4
@@ -130,8 +130,8 @@ importers:
       '@babel/plugin-transform-typescript': 7.20.2_@babel+core@7.20.5
       '@babel/preset-env': 7.20.2_@babel+core@7.20.5
       '@babel/preset-typescript': 7.18.6_@babel+core@7.20.5
-    devDependencies:
       '@types/babel__core': 7.1.20
+    devDependencies:
       '@types/node': 18.11.13
       typescript: 4.9.4
       vite: 4.0.1_@types+node@18.11.13
@@ -1827,26 +1827,22 @@ packages:
       '@types/babel__generator': 7.6.4
       '@types/babel__template': 7.4.1
       '@types/babel__traverse': 7.18.3
-    dev: true
 
   /@types/babel__generator/7.6.4:
     resolution: {integrity: sha512-tFkciB9j2K755yrTALxD44McOrk+gfpIpvC3sxHjRawj6PfnQxrse4Clq5y/Rq+G3mrBurMax/lG8Qn2t9mSsg==}
     dependencies:
       '@babel/types': 7.20.7
-    dev: true
 
   /@types/babel__template/7.4.1:
     resolution: {integrity: sha512-azBFKemX6kMg5Io+/rdGT0dkGreboUVR0Cdm3fz9QJWpaQGJRQXl7C+6hOTCZcMll7KFyEQpgbYI2lHdsS4U7g==}
     dependencies:
       '@babel/parser': 7.20.5
       '@babel/types': 7.20.7
-    dev: true
 
   /@types/babel__traverse/7.18.3:
     resolution: {integrity: sha512-1kbcJ40lLB7MHsj39U4Sh1uTd2E7rLEa79kmDpI6cy+XiXsteB3POdQomoq4FxszMrO3ZYchkhYJw7A2862b3w==}
     dependencies:
       '@babel/types': 7.20.7
-    dev: true
 
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
