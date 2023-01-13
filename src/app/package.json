@@ -1,27 +1,27 @@
 {
-	"private": true,
-	"name": "@v8tenko/app",
-	"version": "1.0.0",
-	"description": "Application built with @v8tenko/phtml",
-	"license": "ISC",
-	"author": "v8tenko",
-	"type": "module",
-	"scripts": {
-		"build": "vite build",
-		"dev": "vite"
-	},
-	"dependencies": {
-		"@v8tenko/phtml": "workspace:^1.0.0",
-		"@v8tenko/utils": "workspace:^1.0.0",
-		"@v8tenko/vdom": "workspace:^1.0.1",
-		"@v8tenko/vite-plugin-phtml": "workspace:^1.0.0"
-	},
-	"devDependencies": {
-		"@types/node": "^18.11.13",
-		"concurrently": "^7.6.0",
-		"nodemon": "^2.0.20",
-		"typescript": "^4.9.4",
-		"vite": "^4.0.1"
-	},
-	"keywords": []
+    "private": true,
+    "name": "@v8tenko/app",
+    "version": "1.0.0",
+    "description": "Application built with @v8tenko/phtml",
+    "license": "ISC",
+    "author": "v8tenko",
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "dependencies": {
+        "@v8tenko/phtml": "workspace:^1.0.0",
+        "@v8tenko/utils": "workspace:^1.0.0",
+        "@v8tenko/vdom": "workspace:^1.0.2",
+        "@v8tenko/vite-plugin-phtml": "workspace:^1.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^18.11.13",
+        "concurrently": "^7.6.0",
+        "nodemon": "^2.0.20",
+        "typescript": "^4.9.4",
+        "vite": "^4.0.1"
+    },
+    "keywords": []
 }

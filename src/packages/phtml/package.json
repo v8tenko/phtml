@@ -1,6 +1,6 @@
 {
 	"name": "@v8tenko/phtml",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "Simple JSX implementation",
 	"license": "ISC",
 	"author": "v8tenko",
@@ -10,8 +10,8 @@
 		"dev": "tsc -w"
 	},
 	"dependencies": {
-		"@v8tenko/utils": "workspace:^1.0.1",
-		"@v8tenko/vdom": "workspace:^1.0.1"
+		"@v8tenko/utils": "workspace:^1.0.2",
+		"@v8tenko/vdom": "workspace:^1.0.2"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.13",
