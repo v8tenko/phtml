@@ -1,4 +1,4 @@
-import { Node } from './src/node/Node';
+import { Node } from './src/node/node';
 
 export { mount } from './src/render/mount';
 
