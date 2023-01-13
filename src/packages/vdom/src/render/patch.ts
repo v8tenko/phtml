@@ -6,7 +6,6 @@ import { Children, VNodeProps, VNodeKey, VNodeElement } from '../typings/node';
 
 import { DOM } from './patch.dom';
 
-// хуй знает как оно живет, отрефачить бы
 export namespace VDOM {
 	type ChangedProps<Key extends VNodeKey> = {
 		old?: VNodeProps[Key];
