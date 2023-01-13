@@ -1,4 +1,4 @@
-import { phtmlPlugin } from '@v8tenko/vite-plugin-phtml';
+import phtmlPlugin from '@v8tenko/vite-plugin-phtml';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -21,5 +21,6 @@ export default defineConfig({
 	json: {
 		stringify: true
 	},
-	plugins: [phtmlPlugin()]
+	// that sucks, @todo replace
+	plugins: [phtmlPlugin.default()]
 });

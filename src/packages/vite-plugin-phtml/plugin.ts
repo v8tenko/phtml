@@ -6,7 +6,7 @@ const filterFile = (filename: string): boolean => {
 	return ['jsx', 'tsx'].includes(extension);
 };
 
-export const phtmlPlugin = () => ({
+const phtmlPlugin = () => ({
 	name: 'phtml-plugin',
 	transform(code: string, filename: string) {
 		if (!filterFile(filename)) {
@@ -29,3 +29,5 @@ export const phtmlPlugin = () => ({
 		return result.code;
 	}
 });
+
+export default phtmlPlugin;
