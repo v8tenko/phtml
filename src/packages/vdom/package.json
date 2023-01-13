@@ -1,6 +1,6 @@
 {
 	"name": "@v8tenko/vdom",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Virtual DOM implementation for phtml",
 	"license": "ISC",
 	"author": "v8tenko",

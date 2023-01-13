@@ -6,5 +6,9 @@ export const mount = (target: HTMLElement, vNode: VNodeElement): HTMLElement => 
 
 	target.appendChild(domNodeRoot!);
 
-	return target;
+	if (Node.isVNodeList(vNode)) {
+		return target;
+	}
+
+	return domNodeRoot as HTMLElement;
 };

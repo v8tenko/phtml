@@ -1,8 +1,8 @@
 import { assertNever, Nullable } from '@v8tenko/utils';
 
-import { isDocumentFragment } from '../node/node.dom';
-
 export namespace DOM {
+	const isDocumentFragment = (node: Node): boolean => node.nodeName === '#document-fragment';
+
 	type Options =
 		| {
 				target: HTMLElement | undefined;

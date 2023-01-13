@@ -154,8 +154,8 @@ export namespace Node {
 	};
 
 	export const createNode = (vNode: VNodeElement): Nullable<Node> => {
-		const root = document.createDocumentFragment() as Nullable<Node>;
-		const stack = [{ root, node: vNode }];
+		let createdNode = isVNodeList(vNode) ? (document.createDocumentFragment() as Nullable<Node>) : null;
+		const stack = [{ root: createdNode, node: vNode }];
 
 		while (stack.length) {
 			const { node: element, root } = stack.pop()!;
@@ -170,6 +170,10 @@ export namespace Node {
 
 			if (!domNode) {
 				continue;
+			}
+
+			if (!root) {
+				createdNode = domNode;
 			}
 
 			root?.appendChild(domNode);
@@ -193,7 +197,7 @@ export namespace Node {
 			}
 		}
 
-		return root!;
+		return createdNode!;
 	};
 
 	export const createNodeList = (vNodeList: VNodeElement): Node => {
