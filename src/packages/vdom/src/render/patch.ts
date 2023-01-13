@@ -1,6 +1,6 @@
 import { array, assertNever, diff, isNull } from '@v8tenko/utils';
 
-import { Node } from '../node/node';
+import { Node } from '../node/Node';
 import { applySyntheticProps, mapJSXPropToHTMLProp } from '../node/synthetic';
 import { Children, VNodeProps, VNodeKey, VNodeElement } from '../typings/node';
 

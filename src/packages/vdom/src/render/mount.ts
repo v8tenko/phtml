@@ -1,4 +1,4 @@
-import { Node } from '../node/node';
+import { Node } from '../node/Node';
 import { VNodeElement } from '../typings/node';
 
 export const mount = (target: HTMLElement, vNode: VNodeElement): HTMLElement => {
