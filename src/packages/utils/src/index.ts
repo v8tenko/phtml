@@ -9,3 +9,7 @@ export * from './isNull';
 export * from './from';
 export * from './unique';
 export * from './types';
+export * from './clone';
+export * from './uniqueId';
+export * from './clear';
+export * from './previous';

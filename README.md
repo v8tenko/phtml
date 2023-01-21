@@ -24,4 +24,4 @@
     -   [] useReducer
     -   [] useEffect - cleanup function not implemented yet
     -   [] useRef
--   [] Vite plugin
+-   [x] Vite plugin

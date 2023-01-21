@@ -18,7 +18,7 @@ const phtmlPlugin = () => ({
 			presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }]],
 			plugins: [
 				'@babel/plugin-syntax-jsx',
-				['@babel/plugin-transform-react-jsx', { runtime: 'automatic', importSource: '@v8tenko/vdom' }]
+				['@babel/plugin-transform-react-jsx', { runtime: 'automatic', importSource: '@v8tenko/phtml' }]
 			]
 		});
 

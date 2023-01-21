@@ -1,10 +1,11 @@
 import { isEqual } from '@v8tenko/utils';
 
 import PHTML from '../phtml/phtml';
+import { Effect } from '../typings/phtml';
 
 import { UseEffect } from './hooks.state';
 
-export const useEffect = (callback: () => any, dependencies?: any[]) => {
+export const useEffect = (callback: Effect, dependencies?: any[]) => {
 	const {
 		dependencies: oldDependencies,
 		invoked,
@@ -13,16 +14,17 @@ export const useEffect = (callback: () => any, dependencies?: any[]) => {
 		callback,
 		dependencies,
 		type: 'effect',
+		cleanup: null,
 		invoked: false
 	});
 
 	if (!invoked) {
-		PHTML.registerEffect(callback);
+		PHTML.registerEffect(callback, id);
 	}
 
-	if (oldDependencies === undefined || !isEqual(dependencies, oldDependencies)) {
-		PHTML.registerEffect(callback);
+	if (invoked && (oldDependencies === undefined || !isEqual(dependencies, oldDependencies))) {
+		PHTML.registerEffect(callback, id);
 	}
 
-	PHTML.patchHookState(id, { dependencies, invoked: true });
+	PHTML.patchHookState(id, { dependencies: oldDependencies, invoked: true });
 };

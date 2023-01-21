@@ -1,5 +1,9 @@
-import type { SyntheticProps, VNode } from '@v8tenko/vdom';
+import type { SyntheticProps, VNodeComponent } from '../vdom';
 
-export type Cleanup = () => void;
-export type Effect = () => void | Cleanup;
-export type Component<Props = {}> = (args: Props & Partial<SyntheticProps>) => VNode;
+export type CleanupEffect = () => void;
+export type Effect = () => void | CleanupEffect;
+export type IndexedEffect = {
+	effect: Effect;
+	id: number;
+};
+export type Component<Props = {}> = (args: Props & Partial<SyntheticProps>) => VNodeComponent;

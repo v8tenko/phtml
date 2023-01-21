@@ -1,3 +1,6 @@
+import { isNotNull, isNull } from './isNull';
+import { NotNull, Nullable } from './types';
+
 export const assert = (condition: boolean, error?: string) => {
 	if (condition) {
 		return;
@@ -17,4 +20,16 @@ export const assertWarn = (condition: boolean, warnMessage?: string) => {
 
 export const assertNever = (error?: string): never => {
 	throw Error(error || 'Assertion failed');
+};
+
+export const assertNotNull = <T>(value: Nullable<T>): value is NotNull<T> => {
+	assert(isNotNull(value));
+
+	return true;
+};
+
+export const assertNull = <T>(value: Nullable<T>): value is null | undefined => {
+	assert(isNull(value));
+
+	return true;
 };
