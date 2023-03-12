@@ -1,4 +1,4 @@
-import PHTML from './src/phtml/phtml';
+import PHTML from './src/phtml';
 import './src/typings/setup';
 
 export * from './src/hooks';

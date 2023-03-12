@@ -1,7 +1,6 @@
 import { Nullable } from '@v8tenko/utils';
 
 import { CleanupEffect, Effect } from '../typings/phtml';
-import { VNodeComponentMetadata } from '../vdom/typings/node';
 
 export type UseState<T> = {
 	type: 'state';
@@ -24,10 +23,8 @@ export type UseEffect = {
 
 export type HookId = number;
 
-type CommonHookData = {
-	id: HookId;
-	meta: Partial<VNodeComponentMetadata>;
+export type ComponentMetadata = {
+	ids: HookId[];
 };
 
 export type Hook<T> = UseState<T> | UseMemo<T> | UseEffect;
-export type HookState<T> = T & CommonHookData;

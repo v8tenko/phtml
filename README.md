@@ -11,7 +11,7 @@
 ## DoD
 
 -   [x] Virtual DOM
--   [x] Fragments
+-   [] Fragments - unstable
 -   [x] List keys
 -   [] Ref forwarding
 -   Context
@@ -21,7 +21,7 @@
 -   Hooks
     -   [x] useState
     -   [x] useMemo
-    -   [] useReducer
-    -   [] useEffect - cleanup function not implemented yet
+    -   [x] useEffect
     -   [] useRef
+    -   [] useReducer
 -   [x] Vite plugin

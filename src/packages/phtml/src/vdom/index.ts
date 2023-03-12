@@ -1,8 +1,7 @@
-import { Node } from './node/node';
+import { createVNode } from './node/create';
 import { mount } from './render/mount';
-import { patchNode as patch } from './render/patch';
 
-const create = Node.createVNode;
+const create = createVNode;
 
-export { create, mount, patch };
-export * from './typings/node.d';
+export { create, mount };
+export * from './typings/node';

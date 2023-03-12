@@ -1,6 +1,6 @@
 import { isEqual } from '@v8tenko/utils';
 
-import PHTML from '../phtml/phtml';
+import PHTML from '../phtml';
 import { Effect } from '../typings/phtml';
 
 import { UseEffect } from './hooks.state';

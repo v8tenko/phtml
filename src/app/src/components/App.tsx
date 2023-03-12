@@ -1,26 +1,21 @@
-import { useEffect, useState } from '@v8tenko/phtml';
-
-import { Calc } from './Calc';
-import { Item } from './Item';
-
-export const App: PHTML.Component = () => {
-	const [count, setCount] = useState(1);
-	const [test, setTest] = useState(0);
-
-	useEffect(() => {
-		console.log('help');
-	}, []);
-
+export const App: PHTML.FC = () => {
 	return (
-		<>
-			<p>count: {count}</p>
-			<button onClick={() => setCount((old) => old + 1)}>inc</button>
-			<button onClick={() => setCount((old) => old - 1)}>dec</button>
-			{new Array(count).fill(0).map((_, i) => {
-				return <Calc key={i} />;
-			})}
-			{count % 2 === 0 && <Item>test if</Item>}
-			<button onClick={() => setTest((old) => old + 1)}>{test}</button>
-		</>
+		<div id="root" className="rofl">
+			<p id="first">help me!</p>
+			<p>help me!</p>
+			<p>help me!</p>
+			<>
+				kfodwkdw
+				<div>helepe</div>
+				<p>wodkwodkw</p>
+			</>
+			<div>
+				<div>
+					<p>inner</p>
+				</div>
+			</div>
+			{new Array(10).fill(0).map((_, i) => i % 2 === 0 && <p key={i}>{i}</p>)}
+			{new Array(10).fill(0).map((_, i) => i % 2 === 1 && <p key={i}>{i}</p>)}
+		</div>
 	);
 };

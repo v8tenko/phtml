@@ -1,6 +1,6 @@
 import { invoke } from '@v8tenko/utils';
 
-import PHTML from '../phtml/phtml';
+import PHTML from '../phtml';
 
 import { UseState } from './hooks.state';
 
